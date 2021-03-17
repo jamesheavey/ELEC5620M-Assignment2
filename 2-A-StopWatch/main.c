@@ -11,40 +11,46 @@
 #include "DE1SoC_SevenSeg/DE1SoC_SevenSeg.h"
 
 volatile unsigned int *key_ptr = (unsigned int *)0xFF200050;  // key buttons base address
+const unsigned int scaler = 200 - 1;
+const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
+
+const unsigned int RESET[4] = {0};
+
 
 //Main Function
 int main(void) {
     /* Local Variables */
-	unsigned int lastBlinkTimerValue[4] = {0};
+	unsigned int lastIncrementTimerValue[4] = {0};
 	unsigned int time_vals[4] = {0};
-	const unsigned int blinkPeriod[4] = {500000,50000000,3000000000,180000000000};
+	const unsigned int incrementPeriod[4] = {period/100,period,period*60,period*60*60};
+
+	int hour_trigger = 0;
+	bool first = true;
 
 	Timer_initialise(0xFFFEC600);
 	Timer_setLoad(0xFFFFFFFF);
-	Timer_setPrescaler(0);
-	Timer_setControl(0, 1, 1);
+	Timer_setControl(scaler, 0, 1, 1);
 
 	/* Main Run Loop */
 	while(1) {
-		// Read the current time
-		unsigned int currentTimerValue = Timer_readCurrentValue();
-		int i;
 
-		for (i = 0; i < 4; i++) {
-			if ((lastBlinkTimerValue[i] - currentTimerValue) >= blinkPeriod[i]) {
+
+		for (int i = 0; i < 4; i++) {
+			if ((lastIncrementTimerValue[i] - Timer_readCurrentValue()) >= incrementPeriod[i]) {
 
 				time_vals[i] =  time_vals[i] + 1;
-
-				lastBlinkTimerValue[i] = lastBlinkTimerValue[i] - blinkPeriod[i];
+				lastIncrementTimerValue[i] = lastIncrementTimerValue[i] - incrementPeriod[i];
 			}
 		}
 
-		DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[0]%99);
-		DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[1]%60);
-		DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[2]%60);
+		if (first && time_vals[2] >= 60) { hour_trigger++; first = false; }
+
+		DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[hour_trigger + 0]%100);
+		DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[hour_trigger + 1]%60);
+		DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[hour_trigger + 2]%60);
 
 		Timer_clearInterruptFlag();
-		// Finally, reset the watchdog timer.
 		HPS_ResetWatchdog();
 	}
 }
+

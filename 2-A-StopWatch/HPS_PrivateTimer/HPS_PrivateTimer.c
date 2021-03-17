@@ -28,12 +28,12 @@ bool Timer_isInitialised() {
     return timer_initialised;
 }
 
-signed int Timer_setPrescaler(unsigned int scaler){
-	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
-
-	timer_base_ptr[TIMER_CONTROL] = scaler << 8;
-	return TIMER_SUCCESS;
-}
+//signed int Timer_setPrescaler(unsigned int scaler){
+//	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
+//
+//	timer_base_ptr[TIMER_CONTROL] = scaler << 8;
+//	return TIMER_SUCCESS;
+//}
 
 signed int Timer_setLoad(unsigned int load_value){
 	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
@@ -42,10 +42,10 @@ signed int Timer_setLoad(unsigned int load_value){
 	return TIMER_SUCCESS;
 }
 
-signed int Timer_setControl(unsigned int I, unsigned int A, unsigned int E){
+signed int Timer_setControl(unsigned int prescaler, unsigned int I, unsigned int A, unsigned int E){
 	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
 
-	timer_base_ptr[TIMER_CONTROL] = (I << 2 | A << 1 | E << 0);
+	timer_base_ptr[TIMER_CONTROL] = (prescaler << 8 | I << 2 | A << 1 | E << 0);
 	return TIMER_SUCCESS;
 }
 
