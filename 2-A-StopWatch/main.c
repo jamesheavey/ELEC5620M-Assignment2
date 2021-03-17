@@ -50,10 +50,10 @@ int main(void) {
 	while(1) {
 		int i;
 
-		if (*key_ptr && 0x1) { memcpy(time_vals, RESET, sizeof(RESET)); }
+		if (*key_ptr & 0x1) { memcpy(time_vals, RESET, sizeof(RESET)); }
 
 
-		if (*key_ptr && 0x2) { *LED_ptr = timer_to_seconds(time_vals); }
+		if (*key_ptr & 0x2) { *LED_ptr = timer_to_seconds(time_vals); }
 
 		for (i = 0; i < TIMER_SIZE; i++) {
 			if ((lastIncrementTimerValue[i] - Timer_readCurrentValue()) >= incrementPeriod[i]) {
