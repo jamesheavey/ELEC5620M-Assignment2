@@ -34,6 +34,8 @@ int main(void) {
 	/* Main Run Loop */
 	while(1) {
 
+		if (*key_ptr && 0x1) { memcpy(time_vals, RESET, sizeof(RESET)); }
+
 
 		for (int i = 0; i < 4; i++) {
 			if ((lastIncrementTimerValue[i] - Timer_readCurrentValue()) >= incrementPeriod[i]) {
