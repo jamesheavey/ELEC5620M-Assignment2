@@ -24,6 +24,34 @@ void init_timer() {
 	Timer_setControl(scaler, 0, 1, 1);
 }
 
+void intro() {
+	const int num_chars = 27;
+	unsigned int intro_message[num_chars] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
+	unsigned int lastIncrementTimerValue = 0;
+	int i = 0;
+
+	while (!(*key_ptr & 0x1)) {
+
+		if ((lastIncrementTimerValue - Timer_readCurrentValue()) >= period/5) {
+			i++;
+			lastIncrementTimerValue = lastIncrementTimerValue - period/5;
+		}
+
+		DE1SoC_SevenSeg_SetSingleLetter(5,intro_message[i%num_chars]);
+		DE1SoC_SevenSeg_SetSingleLetter(4,intro_message[(i+1)%num_chars]);
+		DE1SoC_SevenSeg_SetSingleLetter(3,intro_message[(i+2)%num_chars]);
+		DE1SoC_SevenSeg_SetSingleLetter(2,intro_message[(i+3)%num_chars]);
+		DE1SoC_SevenSeg_SetSingleLetter(1,intro_message[(i+4)%num_chars]);
+		DE1SoC_SevenSeg_SetSingleLetter(0,intro_message[(i+5)%num_chars]);
+
+		HPS_ResetWatchdog();
+	};
+
+	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
+
+	Timer_setLoad(0xFFFFFFFF);
+}
+
 unsigned int timer_to_seconds(unsigned int time[]){
 
 	unsigned int total_time = 0;
@@ -58,10 +86,9 @@ void timer() {
 
 	*LED_ptr = 0;
 
-	while(!(*key_ptr & 0x1)){HPS_ResetWatchdog();}
-	while(*key_ptr & 0x1){HPS_ResetWatchdog();}
-
 	init_timer();
+
+	intro();
 
 	/* Main Run Loop */
 	while(1) {

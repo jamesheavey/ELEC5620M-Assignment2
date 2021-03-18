@@ -131,3 +131,45 @@ void DE1SoC_SevenSeg_SetDoubleDec(unsigned int display, unsigned int value) {
 	DE1SoC_SevenSeg_SetSingle(display + 1, value / 10);
 
 }
+
+void DE1SoC_SevenSeg_SetSingleLetter(unsigned int display, unsigned int value) {
+    // ToDo: Write the code for driving a single seven segment display here.
+    // Your function should turn a real value 0-F into the correctly encoded
+    // bits to enable the correct segments on the seven segment display to
+    // illuminate. Use the DE1SoC_SevenSeg_Write function you created earlier
+    // to set the bits of the display.
+
+	// Initialise integer variable to store converted
+	// 7seg display hex value
+	int seven_seg_value;
+
+	// Case statement that selects appropriate 7seg
+	// display value based on the Hex input value
+	switch(value){
+
+		case 0x0: seven_seg_value = 0x3E; break;  // U
+		case 0x1: seven_seg_value = 0x54; break;  // n
+		case 0x2: seven_seg_value = 0x10; break;  // i
+		case 0x3: seven_seg_value = 0x3F; break;  // O
+		case 0x4: seven_seg_value = 0x71; break;  // F
+		case 0x5: seven_seg_value = 0x38; break;  // L
+		case 0x6: seven_seg_value = 0x7B; break;  // e
+		case 0x7: seven_seg_value = 0x5E; break;  // d
+		case 0x8: seven_seg_value = 0x6D; break;  // S
+		case 0x9: seven_seg_value = 0x7C; break;  // b
+		case 0xA: seven_seg_value = 0x6E; break;  // Y
+		case 0xB: seven_seg_value = 0x0F; break;  // J
+		case 0xC: seven_seg_value = 0x77; break;  // a
+		case 0xD: seven_seg_value = 0x33; break;  // left half m
+		case 0xE: seven_seg_value = 0x27; break;  // right half m
+		case 0xF: seven_seg_value = 0x00; break;  // off
+
+		default: seven_seg_value = 0x40;
+
+	}
+
+	// Write the selected 7seg hex value to
+	// the designated 7seg display
+	DE1SoC_SevenSeg_Write(display, seven_seg_value);
+
+}

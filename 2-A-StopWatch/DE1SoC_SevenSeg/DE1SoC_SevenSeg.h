@@ -57,4 +57,6 @@ void DE1SoC_SevenSeg_SetDoubleHex(unsigned int display, unsigned int value);
  */
 void DE1SoC_SevenSeg_SetDoubleDec(unsigned int display, unsigned int value);
 
+void DE1SoC_SevenSeg_SetSingleLetter(unsigned int display, unsigned int value);
+
 #endif /* DE1SoC_SEVENSEG_H_ */
