@@ -37,14 +37,14 @@ void init_lcd() {
 void intro() {
 	const int num_chars = 27;
 	unsigned int intro_message[num_chars] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
-	unsigned int lastIncrementTimerValue = 0;
+	unsigned int lastIncrTime = 0;
 	int n = 1;
 	int i = 0;
 
 	while (!(*key_ptr & 0x1)) {
 
-		if ((lastIncrementTimerValue - Timer_readValue()) >= period/5) {
-			lastIncrementTimerValue = lastIncrementTimerValue - period/5;
+		if ((lastIncrTime - Timer_readValue()) >= period/5) {
+			lastIncrTime = lastIncrTime - period/5;
 			*LED_ptr = (n | 512/n);
 			n = (n*2)%511;
 			i++;
@@ -109,16 +109,16 @@ void split(unsigned int time[]){
 	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
 }
 
-int hour_mode_toggle(int hour_mode){
+void mode_toggle(bool* mode){
 	while (*key_ptr & 0x8) {HPS_ResetWatchdog();};
-	return 1^hour_mode;
+	*mode = !(*mode);
 }
 
 void timer() {
-	unsigned int lastIncrementTimerValue[TIMER_SIZE] = {0};
-	unsigned int time_vals[TIMER_SIZE] = {0};
-	const unsigned int incrementPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
-	int hour_mode = 0;
+	unsigned int lastIncrTime[TIMER_SIZE] = {0};
+	unsigned int timeValues[TIMER_SIZE] = {0};
+	const unsigned int incrPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
+	bool mode = false;
 
 	*LED_ptr = 0;
 
@@ -132,33 +132,32 @@ void timer() {
 
 		if (*key_ptr & 0x1) { timer(); }
 
-		if (*key_ptr & 0x2) { split(time_vals); }
+		if (*key_ptr & 0x2) { split(timeValues); }
 
 		if (*key_ptr & 0x4) { pause(Timer_readValue()); }
 
-		if (*key_ptr & 0x8) { hour_mode = hour_mode_toggle(hour_mode); }
+		if (*key_ptr & 0x8) { mode_toggle(&mode); }
 
 		for (i = 0; i < TIMER_SIZE; i++) {
-			if ((lastIncrementTimerValue[i] - Timer_readValue()) >= incrementPeriod[i]) {
-
-				time_vals[i] =  time_vals[i] + 1;
-				lastIncrementTimerValue[i] = lastIncrementTimerValue[i] - incrementPeriod[i];
+			if ((lastIncrTime[i] - Timer_readValue()) >= incrPeriod[i]) {
+				timeValues[i] =  timeValues[i] + 1;
+				lastIncrTime[i] = lastIncrTime[i] - incrPeriod[i];
 			}
 		}
 
-		if ((time_vals[3] >= 1)) { hour_mode = 1; }
+		if ((timeValues[3] >= 1)) { mode = true; }
 
-		if (hour_mode) {
-			DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[1]%60);
-			DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[2]%60);
-			DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[3]%24);
+		if (mode) {
+			DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[1]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[2]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[3]%24);
 		} else {
-			DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[0]%100);
-			DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[1]%60);
-			DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[2]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0]%100);
+			DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2]%60);
 		}
 
-		update_lcd(time_vals);
+		//update_lcd(timeValues);
 
 		Timer_clearInterrupt();
 		HPS_ResetWatchdog();
@@ -167,6 +166,6 @@ void timer() {
 
 //Main Function
 int main(void) {
-	init_lcd();
+	//init_lcd();
 	timer();
 }
