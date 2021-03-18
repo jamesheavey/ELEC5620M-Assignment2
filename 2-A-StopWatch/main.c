@@ -21,6 +21,7 @@ const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
 
 const unsigned int TIMER_SIZE = 4;
 const unsigned int LED_MAX = 1024;                            // 2^10 as there are 10 LEDs
+const unsigned int COEFFICIENTS[TIMER_SIZE] = {100,60,60,24};
 
 void init_timer() {
 	Timer_initialise(0xFFFEC600);
@@ -140,22 +141,18 @@ void timer() {
 
 		for (i = 0; i < TIMER_SIZE; i++) {
 			if ((lastIncrTime[i] - Timer_readValue()) >= incrPeriod[i]) {
-				timeValues[i] =  timeValues[i] + 1;
+				timeValues[i] =  (timeValues[i] + 1) % COEFFICIENTS[i];
 				lastIncrTime[i] = lastIncrTime[i] - incrPeriod[i];
 			}
+
+			DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0+mode]);
+			DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1+mode]);
+			DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2+mode]);
+
+			*LED_ptr =  ~((signed int) -1 << timeValues[0]/10);
 		}
 
 		if ((timeValues[3] >= 1)) { mode = true; }
-
-		if (mode) {
-			DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[1]%60);
-			DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[2]%60);
-			DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[3]%24);
-		} else {
-			DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0]%100);
-			DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1]%60);
-			DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2]%60);
-		}
 
 		//update_lcd(timeValues);
 
