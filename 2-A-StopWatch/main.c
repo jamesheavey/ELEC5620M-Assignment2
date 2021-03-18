@@ -41,6 +41,9 @@ void intro() {
 	unsigned int lastIncrTime = 0;
 	int n = 1;
 	int i = 0;
+	int j;
+
+	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
 
 	while (!(*key_ptr & 0x1)) {
 
@@ -51,12 +54,9 @@ void intro() {
 			i++;
 		}
 
-		DE1SoC_SevenSeg_SetSingleLetter(5,intro_message[i%num_chars]);
-		DE1SoC_SevenSeg_SetSingleLetter(4,intro_message[(i+1)%num_chars]);
-		DE1SoC_SevenSeg_SetSingleLetter(3,intro_message[(i+2)%num_chars]);
-		DE1SoC_SevenSeg_SetSingleLetter(2,intro_message[(i+3)%num_chars]);
-		DE1SoC_SevenSeg_SetSingleLetter(1,intro_message[(i+4)%num_chars]);
-		DE1SoC_SevenSeg_SetSingleLetter(0,intro_message[(i+5)%num_chars]);
+		for (j = 0; j<6; j++){
+			DE1SoC_SevenSeg_SetSingleLetter(5-j,intro_message[(i+j)%num_chars]);
+		}
 
 		HPS_ResetWatchdog();
 	};
@@ -80,8 +80,12 @@ void update_lcd(unsigned int time_values[]){
 
 	LT24_clearDisplay(LT24_BLACK);
 
-	for (i = 0, j = 0; i < TIMER_SIZE; i++, j= j + width*scale + 5){
-		LT24_drawChar(BF_fontMap[16 + time_values[i]%10],  LT24_WHITE, x + j, y, width, height, scale);
+	for (i = 0, j = 0; i < TIMER_SIZE; i++, j= j + 2*(width*scale + 10)){
+		LT24_drawChar(BF_fontMap[16 + (time_values[3-i]/10)%10],  LT24_WHITE, x + j/2, y, width, height, scale);
+	}
+
+	for (i = 0, j = width*scale + 10; i < TIMER_SIZE; i++, j= j + 2*(width*scale + 10)){
+		LT24_drawChar(BF_fontMap[16 + (time_values[3-i]%10)%10],  LT24_WHITE, x + j, y, width, height, scale);
 	}
 
 }
@@ -97,12 +101,14 @@ unsigned int timer_to_LEDs(unsigned int time[]){
 	}
 }
 
-void pause(unsigned int timer_val){
+void pause(){
+	Timer_setControl(scaler, 0, 1, 0);
+
 	while (*key_ptr & 0x4) {HPS_ResetWatchdog();};
 	while (!(*key_ptr & 0x4)){HPS_ResetWatchdog();};
 	while (*key_ptr & 0x4) {HPS_ResetWatchdog();};
 
-	Timer_setLoad(timer_val);
+	Timer_setControl(scaler, 0, 1, 1);
 }
 
 void split(unsigned int time[]){
@@ -135,7 +141,7 @@ void timer() {
 
 		if (*key_ptr & 0x2) { split(timeValues); }
 
-		if (*key_ptr & 0x4) { pause(Timer_readValue()); }
+		if (*key_ptr & 0x4) { pause(); }
 
 		if (*key_ptr & 0x8) { mode_toggle(&mode); }
 
@@ -143,18 +149,18 @@ void timer() {
 			if ((lastIncrTime[i] - Timer_readValue()) >= incrPeriod[i]) {
 				timeValues[i] =  (timeValues[i] + 1) % COEFFICIENTS[i];
 				lastIncrTime[i] = lastIncrTime[i] - incrPeriod[i];
-			}
 
-			DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0+mode]);
-			DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1+mode]);
-			DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2+mode]);
+				DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0+mode]);
+				DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1+mode]);
+				DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2+mode]);
+
+				//update_lcd(timeValues);
+			}
 
 			*LED_ptr =  ~((signed int) -1 << timeValues[0]/10);
 		}
 
 		if ((timeValues[3] >= 1)) { mode = true; }
-
-		//update_lcd(timeValues);
 
 		Timer_clearInterrupt();
 		HPS_ResetWatchdog();
