@@ -68,7 +68,7 @@ void intro() {
 	Timer_setLoad(0xFFFFFFFF);
 }
 
-void update_lcd(unsigned int time_values[]){
+void update_lcd(unsigned int timeValues[]){
 	// split each into 2 parts
 	int scale = 4;
 	int width = 5;
@@ -76,17 +76,13 @@ void update_lcd(unsigned int time_values[]){
 
 	int x = 20;
 	int y = 20;
-	int i, j;
 
 	LT24_clearDisplay(LT24_BLACK);
 
-	for (i = 0, j = 0; i < TIMER_SIZE; i++, j= j + 2*(width*scale + 10)){
-		LT24_drawChar(BF_fontMap[16 + (time_values[3-i]/10)%10],  LT24_WHITE, x + j/2, y, width, height, scale);
-	}
-
-	for (i = 0, j = width*scale + 10; i < TIMER_SIZE; i++, j= j + 2*(width*scale + 10)){
-		LT24_drawChar(BF_fontMap[16 + (time_values[3-i]%10)%10],  LT24_WHITE, x + j, y, width, height, scale);
-	}
+	LT24_drawCharDoubleDec(timeValues[3], LT24_WHITE, 20, y, width, height, scale);
+	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, 80, y, width, height, scale);
+	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, 140, y, width, height, scale);
+	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, 200, 36, width, height, scale/2);
 
 }
 
@@ -154,7 +150,7 @@ void timer() {
 				DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1+mode]);
 				DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2+mode]);
 
-				//update_lcd(timeValues);
+				update_lcd(timeValues);
 			}
 
 			*LED_ptr =  ~((signed int) -1 << timeValues[0]/10);
@@ -169,6 +165,6 @@ void timer() {
 
 //Main Function
 int main(void) {
-	//init_lcd();
+	init_lcd();
 	timer();
 }
