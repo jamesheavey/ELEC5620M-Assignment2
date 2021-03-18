@@ -18,6 +18,11 @@ const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
 const unsigned int TIMER_SIZE = 4;
 const unsigned int COEFFICIENTS[TIMER_SIZE] = {1/100, 1, 60, 3600};
 
+void init_timer() {
+	Timer_initialise(0xFFFEC600);
+	Timer_setLoad(0xFFFFFFFF);
+	Timer_setControl(scaler, 0, 1, 1);
+}
 
 unsigned int timer_to_seconds(unsigned int time[]){
 
@@ -32,29 +37,31 @@ unsigned int timer_to_seconds(unsigned int time[]){
 }
 
 void pause(unsigned int timer_val){
-	while (*key_ptr & 0x4) {};
-
-	while (!(*key_ptr & 0x4)){};
-
-	while (*key_ptr & 0x4) {};
+	while (*key_ptr & 0x4) {HPS_ResetWatchdog();};
+	while (!(*key_ptr & 0x4)){HPS_ResetWatchdog();};
+	while (*key_ptr & 0x4) {HPS_ResetWatchdog();};
 
 	Timer_setLoad(timer_val);
+}
+
+void split(unsigned int time[]){
+	*LED_ptr = timer_to_seconds(time);
+	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
 }
 
 void timer() {
 	unsigned int lastIncrementTimerValue[TIMER_SIZE] = {0};
 	unsigned int time_vals[TIMER_SIZE] = {0};
 	const unsigned int incrementPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
-
 	int hour_trigger = 0;
 	bool first = true;
 
-	Timer_initialise(0xFFFEC600);
-	Timer_setLoad(0xFFFFFFFF);
-	Timer_setControl(scaler, 0, 1, 1);
+	*LED_ptr = 0;
 
-	while(!(*key_ptr & 0x1)){}
-	while(*key_ptr & 0x1){}
+	while(!(*key_ptr & 0x1)){HPS_ResetWatchdog();}
+	while(*key_ptr & 0x1){HPS_ResetWatchdog();}
+
+	init_timer();
 
 	/* Main Run Loop */
 	while(1) {
@@ -62,7 +69,7 @@ void timer() {
 
 		if (*key_ptr & 0x1) { timer(); }
 
-		if (*key_ptr & 0x2) { *LED_ptr = timer_to_seconds(time_vals); }
+		if (*key_ptr & 0x2) { split(time_vals); }
 
 		if (*key_ptr & 0x4) { pause(Timer_readCurrentValue()); }
 
