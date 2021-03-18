@@ -8,5 +8,5 @@ bool Timer_isInitialised( void );
 //signed int Timer_setPrescaler(unsigned int scaler);
 signed int Timer_setLoad(unsigned int load_value);
 signed int Timer_setControl(unsigned int prescaler, unsigned int I, unsigned int A, unsigned int E);
-signed int Timer_readCurrentValue( void );
-signed int Timer_clearInterruptFlag( void );
+signed int Timer_readValue( void );
+signed int Timer_clearInterrupt( void );

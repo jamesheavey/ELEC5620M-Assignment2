@@ -2,7 +2,9 @@
  * main.c
  *
  *  Created on: Mar 17, 2021
- *      Author: James
+ *      Author: James Heavey
+ *      Affiliation: University of Leeds
+ *
  */
 
 #include "HPS_Watchdog/HPS_Watchdog.h"
@@ -16,7 +18,7 @@ const unsigned int scaler = 200 - 1;
 const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
 
 const unsigned int TIMER_SIZE = 4;
-const unsigned int LED_MAX = 1024;            // 2^10 as there are 10 LEDs
+const unsigned int LED_MAX = 1024;                            // 2^10 as there are 10 LEDs
 
 void init_timer() {
 	Timer_initialise(0xFFFEC600);
@@ -33,11 +35,11 @@ void intro() {
 
 	while (!(*key_ptr & 0x1)) {
 
-		if ((lastIncrementTimerValue - Timer_readCurrentValue()) >= period/5) {
-			i++;
+		if ((lastIncrementTimerValue - Timer_readValue()) >= period/5) {
 			lastIncrementTimerValue = lastIncrementTimerValue - period/5;
 			*LED_ptr = (n | 512/n);
 			n = (n*2)%511;
+			i++;
 		}
 
 		DE1SoC_SevenSeg_SetSingleLetter(5,intro_message[i%num_chars]);
@@ -49,6 +51,8 @@ void intro() {
 
 		HPS_ResetWatchdog();
 	};
+
+	*LED_ptr = 0;
 
 	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
 
@@ -83,7 +87,7 @@ void timer() {
 	unsigned int lastIncrementTimerValue[TIMER_SIZE] = {0};
 	unsigned int time_vals[TIMER_SIZE] = {0};
 	const unsigned int incrementPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
-	int hour_trigger = 0;
+	int hour_mode = 0;
 	bool first = true;
 
 	*LED_ptr = 0;
@@ -100,23 +104,34 @@ void timer() {
 
 		if (*key_ptr & 0x2) { split(time_vals); }
 
-		if (*key_ptr & 0x4) { pause(Timer_readCurrentValue()); }
+		if (*key_ptr & 0x4) { pause(Timer_readValue()); }
+
+		if (*key_ptr & 0x8) {
+			hour_mode = ~hour_mode;
+			while (*key_ptr & 0x8) {HPS_ResetWatchdog();};
+		}
 
 		for (i = 0; i < TIMER_SIZE; i++) {
-			if ((lastIncrementTimerValue[i] - Timer_readCurrentValue()) >= incrementPeriod[i]) {
+			if ((lastIncrementTimerValue[i] - Timer_readValue()) >= incrementPeriod[i]) {
 
 				time_vals[i] =  time_vals[i] + 1;
 				lastIncrementTimerValue[i] = lastIncrementTimerValue[i] - incrementPeriod[i];
 			}
 		}
 
-		if (first && time_vals[2] >= 60) { hour_trigger++; first = false; }
+		if (first && time_vals[2] >= 60) { hour_mode = true; first = false; }
 
-		DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[hour_trigger + 0]%100);
-		DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[hour_trigger + 1]%60);
-		DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[hour_trigger + 2]%60);
+		if (hour_mode) {
+			DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[1]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[2]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[3]%24);
+		} else {
+			DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[0]%100);
+			DE1SoC_SevenSeg_SetDoubleDec(2,time_vals[1]%60);
+			DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[2]%60);
+		}
 
-		Timer_clearInterruptFlag();
+		Timer_clearInterrupt();
 		HPS_ResetWatchdog();
 	}
 }

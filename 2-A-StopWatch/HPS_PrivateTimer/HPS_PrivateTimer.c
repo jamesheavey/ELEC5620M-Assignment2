@@ -28,13 +28,6 @@ bool Timer_isInitialised() {
     return timer_initialised;
 }
 
-//signed int Timer_setPrescaler(unsigned int scaler){
-//	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
-//
-//	timer_base_ptr[TIMER_CONTROL] = scaler << 8;
-//	return TIMER_SUCCESS;
-//}
-
 signed int Timer_setLoad(unsigned int load_value){
 	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
 
@@ -49,13 +42,13 @@ signed int Timer_setControl(unsigned int prescaler, unsigned int I, unsigned int
 	return TIMER_SUCCESS;
 }
 
-signed int Timer_readCurrentValue(){
+signed int Timer_readValue(){
 	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
 
-	return (timer_base_ptr[TIMER_VALUE]);
+	return timer_base_ptr[TIMER_VALUE];
 }
 
-signed int Timer_clearInterruptFlag(){
+signed int Timer_clearInterrupt(){
 	if (!Timer_isInitialised()) return TIMER_ERRORNOINIT;
 
 	if (timer_base_ptr[TIMER_INTERRUPT] & 0x1) {
