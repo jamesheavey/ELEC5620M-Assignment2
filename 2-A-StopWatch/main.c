@@ -31,6 +31,16 @@ unsigned int timer_to_seconds(unsigned int time[]){
 	return total_time;
 }
 
+void pause(unsigned int timer_val){
+	while (*key_ptr & 0x4) {};
+
+	while (!(*key_ptr & 0x4)){};
+
+	while (*key_ptr & 0x4) {};
+
+	Timer_setLoad(timer_val);
+}
+
 void timer() {
 	unsigned int lastIncrementTimerValue[TIMER_SIZE] = {0};
 	unsigned int time_vals[TIMER_SIZE] = {0};
@@ -43,6 +53,9 @@ void timer() {
 	Timer_setLoad(0xFFFFFFFF);
 	Timer_setControl(scaler, 0, 1, 1);
 
+	while(!(*key_ptr & 0x1)){}
+	while(*key_ptr & 0x1){}
+
 	/* Main Run Loop */
 	while(1) {
 		int i;
@@ -50,6 +63,8 @@ void timer() {
 		if (*key_ptr & 0x1) { timer(); }
 
 		if (*key_ptr & 0x2) { *LED_ptr = timer_to_seconds(time_vals); }
+
+		if (*key_ptr & 0x4) { pause(Timer_readCurrentValue()); }
 
 		for (i = 0; i < TIMER_SIZE; i++) {
 			if ((lastIncrementTimerValue[i] - Timer_readCurrentValue()) >= incrementPeriod[i]) {
@@ -72,6 +87,5 @@ void timer() {
 
 //Main Function
 int main(void) {
-    /* Local Variables */
 	timer();
 }
