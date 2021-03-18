@@ -61,6 +61,10 @@ unsigned int timer_to_seconds(unsigned int time[]){
 		total_time += time[i] * COEFFICIENTS[i];
 	}
 
+	// if the number of seconds is too big for num LEDs (> 17 mins) convert to minutes,
+	// if still too big (> 17 hrs), convert to hours
+	while(total_time > 1023) { total_time = total_time / 60; }
+
 	return total_time;
 }
 
