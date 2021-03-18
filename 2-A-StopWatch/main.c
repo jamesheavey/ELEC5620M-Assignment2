@@ -16,7 +16,6 @@ const unsigned int scaler = 200 - 1;
 const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
 
 const unsigned int TIMER_SIZE = 4;
-const unsigned int RESET[TIMER_SIZE] = {0};
 const unsigned int COEFFICIENTS[TIMER_SIZE] = {1/100, 1, 60, 3600};
 
 
@@ -32,9 +31,7 @@ unsigned int timer_to_seconds(unsigned int time[]){
 	return total_time;
 }
 
-//Main Function
-int main(void) {
-    /* Local Variables */
+void timer() {
 	unsigned int lastIncrementTimerValue[TIMER_SIZE] = {0};
 	unsigned int time_vals[TIMER_SIZE] = {0};
 	const unsigned int incrementPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
@@ -50,8 +47,7 @@ int main(void) {
 	while(1) {
 		int i;
 
-		if (*key_ptr & 0x1) { memcpy(time_vals, RESET, sizeof(RESET)); }
-
+		if (*key_ptr & 0x1) { timer(); }
 
 		if (*key_ptr & 0x2) { *LED_ptr = timer_to_seconds(time_vals); }
 
@@ -72,4 +68,10 @@ int main(void) {
 		Timer_clearInterruptFlag();
 		HPS_ResetWatchdog();
 	}
+}
+
+//Main Function
+int main(void) {
+    /* Local Variables */
+	timer();
 }
