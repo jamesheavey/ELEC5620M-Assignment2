@@ -29,6 +29,9 @@
 								<option id="com.arm.tool.c.compiler.option.targetcpu.1076826337" name="Target CPU (--cpu)" superClass="com.arm.tool.c.compiler.option.targetcpu" useByScannerDiscovery="true" value="Cortex-A9.no_neon.no_vfp" valueType="string"/>
 								<option id="com.arm.tool.c.compiler.option.fppcs.1522693545" name="Floating-point PCS (--apcs)" superClass="com.arm.tool.c.compiler.option.fppcs" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.fppcs.auto" valueType="enumerated"/>
 								<option id="com.arm.tool.c.compiler.option.inst.1355517110" name="Instruction set" superClass="com.arm.tool.c.compiler.option.inst" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.inst.arm" valueType="enumerated"/>
+								<option id="com.arm.tool.c.compiler.option.defmac.2103786686" superClass="com.arm.tool.c.compiler.option.defmac" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="HARDWARE_OPTIMISED"/>
+								</option>
 								<inputType id="com.arm.tool.c.compiler.input.2066852045" superClass="com.arm.tool.c.compiler.input"/>
 								<inputType id="com.arm.tool.cpp.compiler.input.140302852" superClass="com.arm.tool.cpp.compiler.input"/>
 							</tool>

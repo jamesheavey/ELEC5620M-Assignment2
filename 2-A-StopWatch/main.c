@@ -10,6 +10,8 @@
 #include "HPS_Watchdog/HPS_Watchdog.h"
 #include "HPS_PrivateTimer/HPS_PrivateTimer.h"
 #include "DE1SoC_SevenSeg/DE1SoC_SevenSeg.h"
+#include "DE1SoC_LT24/DE1SoC_LT24.h"
+#include "BasicFont/BasicFont.h"
 
 volatile unsigned int *key_ptr = (unsigned int *)0xFF200050;  // key buttons base address
 volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;
@@ -24,6 +26,12 @@ void init_timer() {
 	Timer_initialise(0xFFFEC600);
 	Timer_setLoad(0xFFFFFFFF);
 	Timer_setControl(scaler, 0, 1, 1);
+}
+
+void init_lcd() {
+	LT24_initialise(0xFF200060,0xFF200080);
+	HPS_ResetWatchdog();
+	LT24_clearDisplay(LT24_BLACK);
 }
 
 void intro() {
@@ -59,6 +67,24 @@ void intro() {
 	Timer_setLoad(0xFFFFFFFF);
 }
 
+void update_lcd(unsigned int time_values[]){
+	// split each into 2 parts
+	int scale = 4;
+	int width = 5;
+	int height = 8;
+
+	int x = 20;
+	int y = 20;
+	int i, j;
+
+	LT24_clearDisplay(LT24_BLACK);
+
+	for (i = 0, j = 0; i < TIMER_SIZE; i++, j= j + width*scale + 5){
+		LT24_drawChar(BF_fontMap[16 + time_values[i]%10],  LT24_WHITE, x + j, y, width, height, scale);
+	}
+
+}
+
 unsigned int timer_to_LEDs(unsigned int time[]){
 
 	if(time[1] < LED_MAX){
@@ -83,12 +109,16 @@ void split(unsigned int time[]){
 	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
 }
 
+int hour_mode_toggle(int hour_mode){
+	while (*key_ptr & 0x8) {HPS_ResetWatchdog();};
+	return 1^hour_mode;
+}
+
 void timer() {
 	unsigned int lastIncrementTimerValue[TIMER_SIZE] = {0};
 	unsigned int time_vals[TIMER_SIZE] = {0};
 	const unsigned int incrementPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
 	int hour_mode = 0;
-	bool first = true;
 
 	*LED_ptr = 0;
 
@@ -106,10 +136,7 @@ void timer() {
 
 		if (*key_ptr & 0x4) { pause(Timer_readValue()); }
 
-		if (*key_ptr & 0x8) {
-			hour_mode = ~hour_mode;
-			while (*key_ptr & 0x8) {HPS_ResetWatchdog();};
-		}
+		if (*key_ptr & 0x8) { hour_mode = hour_mode_toggle(hour_mode); }
 
 		for (i = 0; i < TIMER_SIZE; i++) {
 			if ((lastIncrementTimerValue[i] - Timer_readValue()) >= incrementPeriod[i]) {
@@ -119,7 +146,7 @@ void timer() {
 			}
 		}
 
-		if (first && time_vals[2] >= 60) { hour_mode = true; first = false; }
+		if ((time_vals[3] >= 1)) { hour_mode = 1; }
 
 		if (hour_mode) {
 			DE1SoC_SevenSeg_SetDoubleDec(0,time_vals[1]%60);
@@ -131,6 +158,8 @@ void timer() {
 			DE1SoC_SevenSeg_SetDoubleDec(4,time_vals[2]%60);
 		}
 
+		update_lcd(time_vals);
+
 		Timer_clearInterrupt();
 		HPS_ResetWatchdog();
 	}
@@ -138,5 +167,6 @@ void timer() {
 
 //Main Function
 int main(void) {
+	init_lcd();
 	timer();
 }
