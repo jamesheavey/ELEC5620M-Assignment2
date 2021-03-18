@@ -28,6 +28,7 @@ void intro() {
 	const int num_chars = 27;
 	unsigned int intro_message[num_chars] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
 	unsigned int lastIncrementTimerValue = 0;
+	int n = 1;
 	int i = 0;
 
 	while (!(*key_ptr & 0x1)) {
@@ -35,6 +36,8 @@ void intro() {
 		if ((lastIncrementTimerValue - Timer_readCurrentValue()) >= period/5) {
 			i++;
 			lastIncrementTimerValue = lastIncrementTimerValue - period/5;
+			*LED_ptr = (n | 512/n);
+			n = (n*2)%511;
 		}
 
 		DE1SoC_SevenSeg_SetSingleLetter(5,intro_message[i%num_chars]);
