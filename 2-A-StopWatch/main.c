@@ -16,7 +16,7 @@ const unsigned int scaler = 200 - 1;
 const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
 
 const unsigned int TIMER_SIZE = 4;
-const unsigned int COEFFICIENTS[TIMER_SIZE] = {1/100, 1, 60, 3600};
+const unsigned int LED_MAX = 1024;            // 2^10 as there are 10 LEDs
 
 void init_timer() {
 	Timer_initialise(0xFFFEC600);
@@ -52,20 +52,15 @@ void intro() {
 	Timer_setLoad(0xFFFFFFFF);
 }
 
-unsigned int timer_to_seconds(unsigned int time[]){
+unsigned int timer_to_LEDs(unsigned int time[]){
 
-	unsigned int total_time = 0;
-
-	int i;
-	for (i = 1; i < TIMER_SIZE; ++i) {
-		total_time += time[i] * COEFFICIENTS[i];
+	if(time[1] < LED_MAX){
+		return time[1];
+	}else if(time[2] < LED_MAX){
+		return time[2];
+	}else{
+		return time[3];
 	}
-
-	// if the number of seconds is too big for num LEDs (> 17 mins) convert to minutes,
-	// if still too big (> 17 hrs), convert to hours
-	while(total_time > 1023) { total_time = total_time / 60; }
-
-	return total_time;
 }
 
 void pause(unsigned int timer_val){
@@ -77,7 +72,7 @@ void pause(unsigned int timer_val){
 }
 
 void split(unsigned int time[]){
-	*LED_ptr = timer_to_seconds(time);
+	*LED_ptr = timer_to_LEDs(time);
 	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
 }
 
