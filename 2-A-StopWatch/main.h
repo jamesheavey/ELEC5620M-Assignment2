@@ -69,8 +69,8 @@ void draw_time(unsigned int timeValues[], int x, int y, int scale){
 	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, x +2*(2*5*scale), y, 5, 8, scale);
 	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +3.5*(2*5*scale), y, 5, 8, scale);
 	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, x +4*(2*5*scale), y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[14], LT24_WHITE, x +5.5*(2*5*scale), y, 5, 8, scale/1.5);
-	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/1.5);
+	LT24_drawChar(BF_fontMap[14], LT24_WHITE, x +5.5*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
+	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
 }
 
 void update_lcd(unsigned int timeValues[]){
@@ -144,7 +144,8 @@ void timer() {
 
 		if (*key_ptr & 0x4) { pause(); }
 
-		if (*key_ptr & 0x8) { mode_toggle(&mode); }
+		if ((timeValues[3] >= 1)) { mode = true; }
+		else if (*key_ptr & 0x8) { mode_toggle(&mode); }
 
 		for (i = 0; i < TIMER_SIZE; i++) {
 			if ((lastIncrTime[i] - Timer_readValue()) >= incrPeriod[i]) {
@@ -160,8 +161,6 @@ void timer() {
 
 			*LED_ptr =  ~((signed int) -1 << timeValues[0]/10);
 		}
-
-		if ((timeValues[3] >= 1)) { mode = true; }
 
 		Timer_clearInterrupt();
 		HPS_ResetWatchdog();
