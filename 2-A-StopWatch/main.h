@@ -8,6 +8,12 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
+#include "HPS_Watchdog/HPS_Watchdog.h"
+#include "HPS_PrivateTimer/HPS_PrivateTimer.h"
+#include "DE1SoC_SevenSeg/DE1SoC_SevenSeg.h"
+#include "DE1SoC_LT24/DE1SoC_LT24.h"
+#include "BasicFont/BasicFont.h"
+
 volatile unsigned int *key_ptr = (unsigned int *)0xFF200050;  // key buttons base address
 volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;
 
@@ -16,6 +22,8 @@ const unsigned int period = 225000000/(scaler+1); 			  // 225MHz
 
 const unsigned int TIMER_SIZE = 4;
 const unsigned int LED_MAX = 1024;                            // 2^10 as there are 10 LEDs
+
+const unsigned int intro_message[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
 
 typedef void (*TaskFunction)(unsigned int*);
 
@@ -31,6 +39,10 @@ void init_lcd()
 {
 	LT24_initialise(0xFF200060,0xFF200080);
 	HPS_ResetWatchdog();
+}
+
+void reset_lcd()
+{
 	LT24_clearDisplay(LT24_BLACK);
 
 	LT24_drawCharDoubleDec(0, LT24_WHITE, 20 , 20, 5, 8, 3);
@@ -45,12 +57,11 @@ void init_lcd()
 
 void intro()
 {
-	const int num_chars = 27;
-	unsigned int intro_message[num_chars] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
 	unsigned int lastIncrTime = 0;
-	int n = 1;
-	int i = 0;
-	int j;
+	int n, i, j;
+
+	n=1;
+	i=0;
 
 	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
 
@@ -64,7 +75,7 @@ void intro()
 		}
 
 		for (j = 0; j<6; j++){
-			DE1SoC_SevenSeg_SetSingleLetter(5-j,intro_message[(i+j)%num_chars]);
+			DE1SoC_SevenSeg_SetSingleLetter(5-j,intro_message[(i+j)%27]);
 		}
 
 		HPS_ResetWatchdog();
@@ -73,18 +84,6 @@ void intro()
 	*LED_ptr = 0;
 
 	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
-}
-
-unsigned int timer_to_LEDs(unsigned int time[])
-{
-
-	if(time[1] < LED_MAX){
-		return time[1];
-	}else if(time[2] < LED_MAX){
-		return time[2];
-	}else{
-		return time[3];
-	}
 }
 
 void pause()
@@ -114,8 +113,6 @@ void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum
 
 void split(unsigned int timeValues[], int *splitNum)
 {
-	*LED_ptr = timer_to_LEDs(timeValues);
-
 	if ((*splitNum % 10) == 0) { LT24_drawDoubleChar(97, LT24_BLACK, 0 , 60, 5, 8, 240/5); }
 
 	draw_split(timeValues, 80, 60+25*(*splitNum % 10), 2, *splitNum +1);
@@ -163,7 +160,8 @@ void hours(unsigned int* timeValue)
 	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 20 , 20, 5, 8, 3);
 }
 
-void timer() {
+void timer()
+{
 	unsigned int lastIncrTime[TIMER_SIZE] = {0};
 	unsigned int timeValues[TIMER_SIZE] = {0};
 	const unsigned int incrPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600};
@@ -171,14 +169,11 @@ void timer() {
 	bool mode = false;
 	int splitNum = 0;
 
-	LT24_clearDisplay(LT24_BLACK);
-	*LED_ptr = 0;
-
 	init_timer();
 
-	intro();
+	reset_lcd();
 
-	init_lcd();
+	intro();
 
 	Timer_setLoad(0xFFFFFFFF);  // reset timer
 
