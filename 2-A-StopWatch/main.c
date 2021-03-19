@@ -16,6 +16,5 @@
 
 //Main Function
 int main(void) {
-	init_lcd();
 	timer();
 }

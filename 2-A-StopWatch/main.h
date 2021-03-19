@@ -32,6 +32,15 @@ void init_lcd()
 	LT24_initialise(0xFF200060,0xFF200080);
 	HPS_ResetWatchdog();
 	LT24_clearDisplay(LT24_BLACK);
+
+	LT24_drawCharDoubleDec(0, LT24_WHITE, 20 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, 80 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, 140 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, 200 , 36, 5, 8, 1.5);
+
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, 65, 20, 5, 8, 3);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, 125, 20, 5, 8, 3);
+	LT24_drawChar(BF_fontMap[14], LT24_WHITE, 185, 36, 5, 8, 1.5);
 }
 
 void intro()
@@ -64,27 +73,6 @@ void intro()
 	*LED_ptr = 0;
 
 	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
-
-	Timer_setLoad(0xFFFFFFFF);
-}
-
-void draw_time(unsigned int timeValues[], int x, int y, int scale)
-{
-	LT24_drawCharDoubleDec(timeValues[3], LT24_WHITE, x , y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +1.5*(2*5*scale), y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, x +2*(2*5*scale), y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +3.5*(2*5*scale), y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, x +4*(2*5*scale), y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[14], LT24_WHITE, x +5.5*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
-	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
-}
-
-void update_lcd(unsigned int timeValues[])
-{
-	// split each into 2 parts
-	LT24_clearDisplay(LT24_BLACK);
-
-	draw_time(timeValues, 20, 20, 3);
 }
 
 unsigned int timer_to_LEDs(unsigned int time[])
@@ -97,14 +85,6 @@ unsigned int timer_to_LEDs(unsigned int time[])
 	}else{
 		return time[3];
 	}
-}
-
-void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum)
-{
-
-	LT24_drawChar(BF_fontMap[16 + splitNum%10], LT24_WHITE, x-(5*scale)-10, y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x-(5*scale), y, 5, 8, scale);
-	draw_time(timeValues, x, y, scale);
 }
 
 void pause()
@@ -122,7 +102,7 @@ void split(unsigned int timeValues[], int *splitNum)
 {
 	*splitNum++;
 	*LED_ptr = timer_to_LEDs(timeValues);
-	draw_split(timeValues, 40, 40*(*splitNum), 2, *splitNum);
+
 	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
 }
 
@@ -135,21 +115,33 @@ void mode_toggle(bool* mode)
 void hundredths(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 100;
+
+	LT24_drawDoubleChar(97, LT24_BLACK, 200 , 36, 5, 8, 1.5);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 200 , 36, 5, 8, 1.5);
 }
 
 void seconds(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 60;
+
+	LT24_drawDoubleChar(97, LT24_BLACK, 140 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 140 , 20, 5, 8, 3);
 }
 
 void minutes(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 60;
+
+	LT24_drawDoubleChar(97, LT24_BLACK, 80 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 80 , 20, 5, 8, 3);
 }
 
 void hours(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 24;
+
+	LT24_drawDoubleChar(97, LT24_BLACK, 20 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 20 , 20, 5, 8, 3);
 }
 
 void timer() {
@@ -166,6 +158,10 @@ void timer() {
 	init_timer();
 
 	intro();
+
+	init_lcd();
+
+	Timer_setLoad(0xFFFFFFFF);  // reset timer
 
 	/* Main Run Loop */
 	while(1) {
@@ -190,8 +186,6 @@ void timer() {
 				DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0+mode]);
 				DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1+mode]);
 				DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2+mode]);
-
-				update_lcd(timeValues);
 			}
 
 			*LED_ptr =  ~((signed int) -1 << timeValues[0]/10);
