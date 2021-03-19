@@ -98,10 +98,29 @@ void pause()
 	Timer_setControl(scaler, 0, 1, 1);
 }
 
+void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum)
+{
+	LT24_drawCharDoubleDec(splitNum, LT24_WHITE, x-2*(5*scale)-30, y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[29], LT24_WHITE, x-(5*scale) -10, y, 5, 8, scale);
+
+	LT24_drawCharDoubleDec(timeValues[3], LT24_WHITE, x , y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +1.5*(2*5*scale), y, 5, 8, scale);
+	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, x +2*(2*5*scale), y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +3.5*(2*5*scale), y, 5, 8, scale);
+	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, x +4*(2*5*scale), y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[14], LT24_WHITE, x +5.5*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
+	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
+}
+
 void split(unsigned int timeValues[], int *splitNum)
 {
-	*splitNum++;
 	*LED_ptr = timer_to_LEDs(timeValues);
+
+	if ((*splitNum % 10) == 0) { LT24_drawDoubleChar(97, LT24_BLACK, 0 , 60, 5, 8, 240/5); }
+
+	draw_split(timeValues, 80, 60+25*(*splitNum % 10), 2, *splitNum +1);
+
+	*splitNum = *splitNum + 1;
 
 	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
 }
