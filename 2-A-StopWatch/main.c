@@ -11,6 +11,12 @@
 
 //Main Function
 int main(void) {
+	// initialise LCD
 	init_lcd();
+
+	// initialise Timer
+	init_timer();
+
+	// begin main timer loop
 	timer();
 }
