@@ -2,7 +2,16 @@
  * main.h
  *
  *  Created on: Mar 19, 2021
- *      Author: James
+ *      Author: 		James
+ *      SID: 			201198933
+ *      Affiliation: 	University of Leeds
+ *
+ * DESCRIPTION:
+ * This file includes all the functions
+ * required to operate a timer on the
+ * DE1-SoC board. Drivers are included
+ * from the UoL ELEC5620 Resources Repository.
+ *
  */
 
 #ifndef MAIN_H_
@@ -24,8 +33,6 @@ const unsigned int period = 225000000/(scaler+1); 			   // A9 Private timer freq
 
 const unsigned int TIMER_SIZE = 4;							   // hundredths, seconds, minutes, hours
 const unsigned int LED_MAX = 1024;                             // 2^10 as there are 10 LEDs
-
-const unsigned int intro_message[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
 
 // TYPE DEFINITIONS
 typedef void (*TaskFunction)(unsigned int*);
@@ -104,6 +111,7 @@ void intro()
 	unsigned int lastIncrTime [2] = {0};
 	unsigned int introPeriods [2] = {period/5, period/10};
 	unsigned int y[12] = { 106,116,126,136,146,156,166,156,146,136,126,116};
+	unsigned int msg[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
 
 	int n=1; int i=0; int j; int k=0; int x=6;
 
@@ -118,7 +126,7 @@ void intro()
 		if ((lastIncrTime[0] - Timer_readValue()) >= introPeriods[0]) {
 			*LED_ptr = (n | 512/n);
 
-			n = (n*2)%256;
+			n = (n*2)%511;
 			i++;
 
 			lastIncrTime[0] = lastIncrTime[0] - introPeriods[0];
@@ -146,7 +154,7 @@ void intro()
 		}
 
 		for (j = 0; j<6; j++){
-			DE1SoC_SevenSeg_SetSingleLetter(5-j,intro_message[(i+j)%27]);
+			DE1SoC_SevenSeg_SetSingleLetter(5-j,msg[(i+j)%27]);
 		}
 
 		HPS_ResetWatchdog();
@@ -288,7 +296,7 @@ void timer()
 				lastIncrTime[i] = lastIncrTime[i] - incrPeriod[i];
 			}
 			// LEDs fill up every second then reset back to 0
-			*LED_ptr =  ~((signed int) -1 << timeValues[0]/10);
+			*LED_ptr =  ~((signed int) -1 << (timeValues[0]/10)+1);
 		}
 
 		// update 7Segment display with new time values
