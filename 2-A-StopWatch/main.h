@@ -101,22 +101,48 @@ void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum
 // Function to introduce the timer on the Seven Segment displays
 void intro()
 {
-	unsigned int lastIncrTime = 0;
-	int n, i, j;
+	unsigned int lastIncrTime [2] = {0};
+	unsigned int introPeriods [2] = {period/5, period/10};
+	unsigned int y[12] = { 106,116,126,136,146,156,166,156,146,136,126,116};
 
-	n=1;
-	i=0;
+	int n=1; int i=0; int j; int k=0; int x=6;
+
+	Timer_setLoad(0xFFFFFFFF);
+	LT24_clearDisplay(LT24_BLACK);
 
 	// if function called on recursion, catch the key press
 	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
 
 	while (!(*key_ptr & 0x1)) {
 
-		if ((lastIncrTime - Timer_readValue()) >= period/5) {
-			lastIncrTime = lastIncrTime - period/5;
+		if ((lastIncrTime[0] - Timer_readValue()) >= introPeriods[0]) {
 			*LED_ptr = (n | 512/n);
+
 			n = (n*2)%256;
 			i++;
+
+			lastIncrTime[0] = lastIncrTime[0] - introPeriods[0];
+		}
+
+		if ((lastIncrTime[1] - Timer_readValue()) >= introPeriods[1]){
+			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x, y[k%12]-10, 5, 8, 8);
+			LT24_drawChar(BF_fontMap[52], LT24_WHITE, x, y[k%12], 5, 8, 6);  // T
+
+			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 48, y[(k+1)%12]-10, 5, 8, 8);
+			LT24_drawChar(BF_fontMap[41], LT24_WHITE, x + 48, y[(k+1)%12], 5, 8, 6);  // I
+
+			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 2*48, y[(k+2)%12]-10, 5, 8, 8);
+			LT24_drawChar(BF_fontMap[45], LT24_WHITE, x + 2*48, y[(k+2)%12], 5, 8, 6);  // M
+
+			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 3*48, y[(k+3)%12]-10, 5, 8, 8);
+			LT24_drawChar(BF_fontMap[37], LT24_WHITE, x + 3*48, y[(k+3)%12], 5, 8, 6);  // E
+
+			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 4*48, y[(k+4)%12]-10, 5, 8, 8);
+			LT24_drawChar(BF_fontMap[50], LT24_WHITE, x + 4*48, y[(k+4)%12], 5, 8, 6);  // R
+
+			k++;
+
+			lastIncrTime[1] = lastIncrTime[1] - introPeriods[1];
 		}
 
 		for (j = 0; j<6; j++){
@@ -230,13 +256,12 @@ void timer()
 	unsigned int timeValues[TIMER_SIZE] = {0}; 											   	// all time values initialised to 0
 	const unsigned int incrPeriod[TIMER_SIZE] = {period/100,period,period*60,period*3600}; 	// set the increment period for all timer units
 	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};		// define task function struct to call increment functions when required
-	bool mode = false;
-	int splitNum = 0;
-	int i;
 
-	reset_lcd();
+	bool mode = false; int splitNum = 0; int i;
 
 	intro();
+
+	reset_lcd();
 
 	Timer_setLoad(0xFFFFFFFF);  // reset timer before main loop
 
