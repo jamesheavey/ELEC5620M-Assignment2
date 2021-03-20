@@ -109,7 +109,7 @@ void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum
 void intro()
 {
 	unsigned int lastIncrTime [3] = {0};
-	unsigned int introPeriods [32] = {period/5, period/10};
+	unsigned int introPeriods [3] = {period/5, period/20, period/50};
 	unsigned int y[12] = { 106,116,126,136,146,156,166,156,146,136,126,116};
 	unsigned int msg[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
 	unsigned short colourMap[32] = {0x0008,0x012C,0x0271,0x0396,0x04DB,0x061F,0x157C,0x2CFA,
@@ -117,7 +117,7 @@ void intro()
 									0xF800,0xF8C0,0xF980,0xFA40,0xFB00,0xFBC0,0xFC80,0xFD40,
 									0xFE00,0xDD41,0xBC82,0x9BC3,0x7B04,0x5A45,0x3986,0x18C7};
 
-	int n=1; int i=0; int j; int k=0; int x=6;
+	int n=1; int i=0; int j; int k=0; int x=6; int z=0;
 
 	Timer_setLoad(0xFFFFFFFF);
 	LT24_clearDisplay(LT24_BLACK);
@@ -127,6 +127,7 @@ void intro()
 
 	while (!(*key_ptr & 0x1)) {
 
+		// LED and seven seg update
 		if ((lastIncrTime[0] - Timer_readValue()) >= introPeriods[0]) {
 			*LED_ptr = (n | 512/n);
 
@@ -136,17 +137,23 @@ void intro()
 			lastIncrTime[0] = lastIncrTime[0] - introPeriods[0];
 		}
 
+		// LCD position update
 		if ((lastIncrTime[1] - Timer_readValue()) >= introPeriods[1]){
-
-			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[k%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);  // T
-			LT24_drawVertMovingChar(BF_fontMap[41], colourMap[k%32], LT24_BLACK, x + 48, y[(k+1)%12], 5, 8, 6, 10);  // I
-			LT24_drawVertMovingChar(BF_fontMap[45], colourMap[k%32], LT24_BLACK, x + 2*48, y[(k+2)%12], 5, 8, 6, 10);  // M
-			LT24_drawVertMovingChar(BF_fontMap[37], colourMap[k%32], LT24_BLACK, x + 3*48, y[(k+3)%12], 5, 8, 6, 10);  // E
-			LT24_drawVertMovingChar(BF_fontMap[50], colourMap[k%32], LT24_BLACK, x + 4*48, y[(k+4)%12], 5, 8, 6, 10);  // R
-
 			k++;
-
 			lastIncrTime[1] = lastIncrTime[1] - introPeriods[1];
+		}
+
+		// LCD colour update and print
+		if ((lastIncrTime[2] - Timer_readValue()) >= introPeriods[2]){
+			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[z%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);  // T
+			LT24_drawVertMovingChar(BF_fontMap[41], colourMap[z%32], LT24_BLACK, x + 48, y[(k+1)%12], 5, 8, 6, 10);  // I
+			LT24_drawVertMovingChar(BF_fontMap[45], colourMap[z%32], LT24_BLACK, x + 2*48, y[(k+2)%12], 5, 8, 6, 10);  // M
+			LT24_drawVertMovingChar(BF_fontMap[37], colourMap[z%32], LT24_BLACK, x + 3*48, y[(k+3)%12], 5, 8, 6, 10);  // E
+			LT24_drawVertMovingChar(BF_fontMap[50], colourMap[z%32], LT24_BLACK, x + 4*48, y[(k+4)%12], 5, 8, 6, 10);  // R
+
+			z++;
+
+			lastIncrTime[2] = lastIncrTime[2] - introPeriods[2];
 		}
 
 		for (j = 0; j<6; j++){
