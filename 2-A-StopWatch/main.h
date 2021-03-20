@@ -31,8 +31,8 @@ volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;  // LEDs base addr
 const unsigned int scaler = 200 - 1;
 const unsigned int period = 225000000/(scaler+1); 			   // A9 Private timer freq. = 225MHz
 
-const unsigned int TIMER_SIZE = 4;							   // hundredths, seconds, minutes, hours
-const unsigned int LED_MAX = 1024;                             // 2^10 as there are 10 LEDs
+const unsigned int 	TIMER_SIZE 	= 4;						   // hundredths, seconds, minutes, hours
+const unsigned int 	LED_MAX 	= 1024;                        // 2^10 as there are 10 LEDs
 
 // TYPE DEFINITIONS
 typedef void (*TaskFunction)(unsigned int*);
@@ -70,14 +70,14 @@ void reset_lcd()
 	// clear display
 	LT24_clearDisplay(LT24_BLACK);
 
-	LT24_drawCharDoubleDec(0, LT24_WHITE, 20 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(0, LT24_WHITE, 80 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(0, LT24_WHITE, 140 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(0, LT24_WHITE, 200 , 25, 5, 8, 2);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 20 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 80 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 140 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 200 , 25, 5, 8, 2);
 
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, 65, 20, 5, 8, 3);
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, 125, 20, 5, 8, 3);
-	LT24_drawChar(BF_fontMap[14], LT24_WHITE, 185, 25, 5, 8, 2);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, 65, 20, 5, 8, 3);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, 125, 20, 5, 8, 3);
+	LT24_drawChar(BF_fontMap[14], LT24_WHITE, LT24_BLACK, 185, 25, 5, 8, 2);
 }
 
 // Used for one time write of instantaneous timeValues when split button pressed.
@@ -85,19 +85,19 @@ void reset_lcd()
 void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum)
 {
 	// draw split number
-	LT24_drawCharDoubleDec(splitNum, LT24_WHITE, x-2*(5*scale)-30, y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[29], LT24_WHITE, x-(5*scale) -10, y, 5, 8, scale);
+	LT24_drawCharDoubleDec(splitNum, LT24_WHITE, LT24_BLACK, x-2*(5*scale)-30, y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[29], LT24_WHITE, LT24_BLACK, x-(5*scale) -10, y, 5, 8, scale);
 
 	// draw timer values
-	LT24_drawCharDoubleDec(timeValues[3], LT24_WHITE, x , y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, x +2*(2*5*scale), y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, x +4*(2*5*scale), y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
+	LT24_drawCharDoubleDec(timeValues[3], LT24_WHITE, LT24_BLACK, x , y, 5, 8, scale);
+	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, LT24_BLACK, x +2*(2*5*scale), y, 5, 8, scale);
+	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, LT24_BLACK, x +4*(2*5*scale), y, 5, 8, scale);
+	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, LT24_BLACK, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
 
 	// timer timer markings ':' and '.'
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +1.5*(2*5*scale), y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[26], LT24_WHITE, x +3.5*(2*5*scale), y, 5, 8, scale);
-	LT24_drawChar(BF_fontMap[14], LT24_WHITE, x +5.5*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, x +1.5*(2*5*scale), y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, x +3.5*(2*5*scale), y, 5, 8, scale);
+	LT24_drawChar(BF_fontMap[14], LT24_WHITE, LT24_BLACK, x +5.5*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
 }
 
 
@@ -108,10 +108,14 @@ void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum
 // Function to introduce the timer on the Seven Segment displays
 void intro()
 {
-	unsigned int lastIncrTime [2] = {0};
-	unsigned int introPeriods [2] = {period/5, period/10};
+	unsigned int lastIncrTime [3] = {0};
+	unsigned int introPeriods [32] = {period/5, period/10};
 	unsigned int y[12] = { 106,116,126,136,146,156,166,156,146,136,126,116};
 	unsigned int msg[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
+	unsigned short colourMap[32] = {0x0008,0x012C,0x0271,0x0396,0x04DB,0x061F,0x157C,0x2CFA,
+									0x4457,0x5BD4,0x7351,0x8AAE,0xA22B,0xB9A8,0xD105,0xE082,
+									0xF800,0xF8C0,0xF980,0xFA40,0xFB00,0xFBC0,0xFC80,0xFD40,
+									0xFE00,0xDD41,0xBC82,0x9BC3,0x7B04,0x5A45,0x3986,0x18C7};
 
 	int n=1; int i=0; int j; int k=0; int x=6;
 
@@ -133,20 +137,12 @@ void intro()
 		}
 
 		if ((lastIncrTime[1] - Timer_readValue()) >= introPeriods[1]){
-			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x, y[k%12]-10, 5, 8, 8);
-			LT24_drawChar(BF_fontMap[52], LT24_WHITE, x, y[k%12], 5, 8, 6);  // T
 
-			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 48, y[(k+1)%12]-10, 5, 8, 8);
-			LT24_drawChar(BF_fontMap[41], LT24_WHITE, x + 48, y[(k+1)%12], 5, 8, 6);  // I
-
-			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 2*48, y[(k+2)%12]-10, 5, 8, 8);
-			LT24_drawChar(BF_fontMap[45], LT24_WHITE, x + 2*48, y[(k+2)%12], 5, 8, 6);  // M
-
-			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 3*48, y[(k+3)%12]-10, 5, 8, 8);
-			LT24_drawChar(BF_fontMap[37], LT24_WHITE, x + 3*48, y[(k+3)%12], 5, 8, 6);  // E
-
-			LT24_drawChar(BF_fontMap[97], LT24_BLACK, x + 4*48, y[(k+4)%12]-10, 5, 8, 8);
-			LT24_drawChar(BF_fontMap[50], LT24_WHITE, x + 4*48, y[(k+4)%12], 5, 8, 6);  // R
+			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[k%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);  // T
+			LT24_drawVertMovingChar(BF_fontMap[41], colourMap[k%32], LT24_BLACK, x + 48, y[(k+1)%12], 5, 8, 6, 10);  // I
+			LT24_drawVertMovingChar(BF_fontMap[45], colourMap[k%32], LT24_BLACK, x + 2*48, y[(k+2)%12], 5, 8, 6, 10);  // M
+			LT24_drawVertMovingChar(BF_fontMap[37], colourMap[k%32], LT24_BLACK, x + 3*48, y[(k+3)%12], 5, 8, 6, 10);  // E
+			LT24_drawVertMovingChar(BF_fontMap[50], colourMap[k%32], LT24_BLACK, x + 4*48, y[(k+4)%12], 5, 8, 6, 10);  // R
 
 			k++;
 
@@ -188,11 +184,12 @@ void pause()
 // Function to print split value to LCD on button press
 void split(unsigned int timeValues[], int *splitNum)
 {
+	signed char	clear [1] 	= {0x1};					   // used to clear LCD splits
 	// if spits extend of screen, clear the splits and start again at the top
-	if ((*splitNum % 10) == 0) { LT24_drawDoubleChar(97, LT24_BLACK, 0 , 60, 5, 8, 240/5); }
+	if ((*splitNum % 10) == 0) { LT24_drawChar(clear, LT24_BLACK,  LT24_BLACK, 0 , 60, 1, 1, 260); }
 
 	// draw the splits at the specified location
-	draw_split(timeValues, 80, 60+25*(*splitNum % 10), 2, *splitNum +1);
+	draw_split(timeValues, 80, 60+25*(*splitNum % 10), 2, *splitNum + 1);
 
 	// increment splitNum address value
 	*splitNum = *splitNum + 1;
@@ -219,8 +216,7 @@ void hundredths(unsigned int* timeValue)
 	*timeValue = (*timeValue +1)% 100;
 
 	// update LCD display with current time value
-	LT24_drawDoubleChar(97, LT24_BLACK, 200 , 25, 5, 8, 2);
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 200 , 25, 5, 8, 2);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 200 , 25, 5, 8, 2);
 }
 
 // Increment seconds timer value, display values
@@ -229,8 +225,7 @@ void seconds(unsigned int* timeValue)
 	*timeValue = (*timeValue +1)% 60;
 
 	// update LCD display with current time value
-	LT24_drawDoubleChar(97, LT24_BLACK, 140 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 140 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 140 , 20, 5, 8, 3);
 }
 
 // Increment minutes timer value, display values
@@ -239,8 +234,7 @@ void minutes(unsigned int* timeValue)
 	*timeValue = (*timeValue +1)% 60;
 
 	// update LCD display with current time value
-	LT24_drawDoubleChar(97, LT24_BLACK, 80 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 80 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 80 , 20, 5, 8, 3);
 }
 
 // Increment hours timer value, display values
@@ -249,8 +243,7 @@ void hours(unsigned int* timeValue)
 	*timeValue = (*timeValue +1)% 24;
 
 	// update LCD display with current time value
-	LT24_drawDoubleChar(97, LT24_BLACK, 20 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, 20 , 20, 5, 8, 3);
+	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 20 , 20, 5, 8, 3);
 }
 
 

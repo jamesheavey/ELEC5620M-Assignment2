@@ -26,7 +26,7 @@
 							<tool id="com.arm.tool.c.compiler.baremetal.exe.debug.1444188719" name="ARM C Compiler 5" superClass="com.arm.tool.c.compiler.baremetal.exe.debug">
 								<option defaultValue="com.arm.tool.c.compiler.option.optlevel.min" id="com.arm.tool.c.compiler.baremetal.exe.debug.base.option.opt.350487926" name="Optimization level" superClass="com.arm.tool.c.compiler.baremetal.exe.debug.base.option.opt" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.optlevel.max" valueType="enumerated"/>
 								<option id="com.arm.tool.c.compiler.option.incpath.72548943" name="Include path (-I)" superClass="com.arm.tool.c.compiler.option.incpath" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ELEC5620M-Drivers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ELEC5620M-Student-jamesheavey}&quot;"/>
 								</option>
 								<option id="com.arm.tool.c.compiler.option.targetcpu.1076826337" name="Target CPU (--cpu)" superClass="com.arm.tool.c.compiler.option.targetcpu" useByScannerDiscovery="true" value="Cortex-A9.no_neon.no_vfp" valueType="string"/>
 								<option id="com.arm.tool.c.compiler.option.fppcs.1522693545" name="Floating-point PCS (--apcs)" superClass="com.arm.tool.c.compiler.option.fppcs" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.fppcs.auto" valueType="enumerated"/>
@@ -61,8 +61,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="ELEC5620M-Drivers|Drivers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ELEC5620M-Drivers"/>
+						<entry excluding="ELEC5620M-Student-jamesheavey|ELEC5620M-Drivers|Drivers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ELEC5620M-Student-jamesheavey"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
