@@ -24,7 +24,7 @@
 #include "BasicFont/BasicFont.h"
 
 // ADDRESS DEFINITIONS
-volatile unsigned int *key_ptr = (unsigned int *) 0xFF200050;  // key buttons base address
+volatile unsigned int *key_ptr = (unsigned int *) 0xFF20005C;  // key buttons edge capture base address
 volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;  // LEDs base address
 
 // CONSTANT DEFINITIONS
@@ -34,7 +34,7 @@ const unsigned int PERIOD = 225000000/(SCALER+1); 			   // A9 Private timer freq
 const unsigned int 	TIMER_SIZE 	= 4;						   // hundredths, seconds, minutes, hours
 
 // TYPE DEFINITIONS
-typedef void (*TaskFunction)(unsigned int*);
+typedef void (*TaskFunction)(unsigned int*, bool);
 
 
 /*
@@ -48,6 +48,7 @@ void init_timer( void );
 // Sends command to initialise LCD
 void init_lcd( void );
 
+
 /*
  * 	LCD FUNCTIONS
  */
@@ -59,6 +60,14 @@ void reset_lcd( void );
 // Used for one time write of instantaneous timeValues when split button pressed.
 // Split display location determined my splitNum value
 void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum);
+
+
+/*
+ * 	SEVEN-SEGEMNT FUNCTIONS
+ */
+
+// used to set all the seven segment displays on reset or mode toggle
+void set_7seg(unsigned int timeValues[], bool mode);
 
 
 /*
@@ -88,16 +97,16 @@ void mode_toggle(bool* mode);
  */
 
 // Increment hundredths timer value, display values
-void hundredths(unsigned int* timeValue);
+void hundredths(unsigned int* timeValue, bool mode);
 
 // Increment seconds timer value, display values
-void seconds(unsigned int* timeValue);
+void seconds(unsigned int* timeValue, bool mode);
 
 // Increment minutes timer value, display values
-void minutes(unsigned int* timeValue);
+void minutes(unsigned int* timeValue, bool mode);
 
 // Increment hours timer value, display values
-void hours(unsigned int* timeValue);
+void hours(unsigned int* timeValue, bool mode);
 
 
 /*

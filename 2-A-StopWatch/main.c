@@ -50,6 +50,13 @@ void reset_lcd()
 	LT24_drawChar(BF_fontMap[14], LT24_WHITE, LT24_BLACK, 185, 25, 5, 8, 2);
 }
 
+void set_7seg(unsigned int timeValues[], bool mode)
+{
+	DE1SoC_SevenSeg_SetDoubleDec(0, timeValues[0 + mode]);
+	DE1SoC_SevenSeg_SetDoubleDec(2, timeValues[1 + mode]);
+	DE1SoC_SevenSeg_SetDoubleDec(4, timeValues[2 + mode]);
+}
+
 // Used for one time write of instantaneous timeValues when split button pressed.
 // Split display location determined my splitNum value
 void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum)
@@ -86,11 +93,11 @@ void intro()
 
 	int n=1; int i=0; int j; int k=0; int x=6; int z=0;
 
+	// clear edge capture flags, on recursion reset
+	*key_ptr = *key_ptr;
+
 	Timer_setLoad(0xFFFFFFFF);
 	LT24_clearDisplay(LT24_BLACK);
-
-	// if function called on recursion, catch the key press
-	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
 
 	while (!(*key_ptr & 0x1)) {
 
@@ -130,9 +137,10 @@ void intro()
 		HPS_ResetWatchdog();
 	};
 
+	// clear LEDs
 	*LED_ptr = 0;
-
-	while (*key_ptr & 0x1) {HPS_ResetWatchdog();};
+	// clear edge capture flags
+	*key_ptr = *key_ptr;
 }
 
 // Function to pause the timer on button press
@@ -141,10 +149,14 @@ void pause()
 	// disable the timer by setting enable bit to 0
 	Timer_setControl(SCALER, 0, 1, 0);
 
+	// clear edge capture flags
+	*key_ptr = *key_ptr;
+
 	// poll key presses until the pause key is pressed again
-	while (*key_ptr & 0x4) {HPS_ResetWatchdog();};
-	while (!(*key_ptr & 0x4)){HPS_ResetWatchdog();};
-	while (*key_ptr & 0x4) {HPS_ResetWatchdog();};
+	while (!(*key_ptr & 0x4)){HPS_ResetWatchdog();}
+
+	// clear edge capture flags
+	*key_ptr = *key_ptr;
 
 	// re-enable timer
 	Timer_setControl(SCALER, 0, 1, 1);
@@ -154,7 +166,7 @@ void pause()
 void split(unsigned int timeValues[], int *splitNum)
 {
 	signed char	clear [1] 	= {0x1};					   // used to clear LCD splits
-	// if spits extend of screen, clear the splits and start again at the top
+	// if spits extend off screen, clear the splits and start again at the top
 	if ((*splitNum % 10) == 0) { LT24_drawChar(clear, LT24_BLACK,  LT24_BLACK, 0, 60, 1, 1, 260); }
 
 	// draw the splits at the specified location
@@ -163,48 +175,59 @@ void split(unsigned int timeValues[], int *splitNum)
 	// increment splitNum address value
 	*splitNum += 1;
 
-	// poll key press, wait for it to be released
-	while (*key_ptr & 0x2) {HPS_ResetWatchdog();};
+	// clear edge capture flags
+	*key_ptr = *key_ptr;
 }
 
 // Function to toggle hour mode
 void mode_toggle(bool* mode)
 {
-	while (*key_ptr & 0x8) {HPS_ResetWatchdog();};
 	*mode = !(*mode);
+	// clear edge capture flags
+	*key_ptr = *key_ptr;
 }
 
 // Increment hundredths timer value, display values
-void hundredths(unsigned int* timeValue)
+void hundredths(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 100;
+
+	DE1SoC_SevenSeg_SetDoubleDec(0 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
 	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 200, 25, 5, 8, 2);
 }
 
 // Increment seconds timer value, display values
-void seconds(unsigned int* timeValue)
+void seconds(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 60;
+
+	DE1SoC_SevenSeg_SetDoubleDec(2 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
 	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 140, 20, 5, 8, 3);
 }
 
 // Increment minutes timer value, display values
-void minutes(unsigned int* timeValue)
+void minutes(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 60;
+
+	DE1SoC_SevenSeg_SetDoubleDec(4 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
 	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 80, 20, 5, 8, 3);
 }
 
 // Increment hours timer value, display values
-void hours(unsigned int* timeValue)
+void hours(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 24;
+
+	// update 7Segment display with new time values
+
+	DE1SoC_SevenSeg_SetDoubleDec(6 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
 	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 20, 20, 5, 8, 3);
@@ -223,6 +246,8 @@ void timer()
 
 	reset_lcd();
 
+	set_7seg(timeValues, mode); // Initialise to '00 00 00'
+
 	Timer_setLoad(0xFFFFFFFF);  // reset timer before main loop
 
 	/* Main Run Loop */
@@ -237,24 +262,19 @@ void timer()
 		if (*key_ptr & 0x4) { pause(); }
 
 		// poll key 4
-		if (timeValues[3] >= 1) { mode = true; }					// if it has been more than 1 hour, force hour mode,
-		else if (*key_ptr & 0x8) { mode_toggle(&mode); }			// else toggle hour mode
+		if (timeValues[3] >= 1) { mode = true; set_7seg(timeValues, mode); }					// if it has been more than 1 hour, force hour mode,
+		else if (*key_ptr & 0x8) { mode_toggle(&mode); set_7seg(timeValues, mode); }			// else toggle hour mode
 
 		// if elapsed time is greater than any specified unit period,
 		// increment the associated timeValue with task scheduler
 		for (i = 0; i < TIMER_SIZE; i++) {
 			if ((lastIncrTime[i] - Timer_readValue()) >= incrPeriod[i]) {
-				taskFunctions[i](&timeValues[i]);
+				taskFunctions[i](&timeValues[i], mode);
 				lastIncrTime[i] -= incrPeriod[i];
 			}
 		}
 		// LEDs fill up every second then reset back to 0
 		*LED_ptr =  ~((signed int) -1 << (timeValues[0]/10)+1);
-
-		// update 7Segment display with new time values
-		DE1SoC_SevenSeg_SetDoubleDec(0,timeValues[0+mode]);
-		DE1SoC_SevenSeg_SetDoubleDec(2,timeValues[1+mode]);
-		DE1SoC_SevenSeg_SetDoubleDec(4,timeValues[2+mode]);
 
 		// check timer interrupt flag, reset if required
 		Timer_clearInterrupt();
