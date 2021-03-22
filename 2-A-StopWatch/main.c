@@ -16,6 +16,8 @@
  */
 
 #include "main.h"
+#include "time.h"
+#include "stdio.h"
 
 // Initialises A9 Private Timer
 // Loads in max timer value, sets control bits
@@ -244,6 +246,11 @@ void timer()
 
 	bool mode = false; int splitNum = 0; int i;
 
+	// Testing
+	double t_elapsed;
+	clock_t test_timers[3];
+	char t_names[3][7] = {"SECONDS", "MINUTES", "HOURS"};
+
 	intro();
 
 	reset_lcd();
@@ -251,6 +258,8 @@ void timer()
 	set_7seg(timeValues, mode); // Initialise to '00 00 00'
 
 	Timer_setLoad(0xFFFFFFFF);  // reset timer before main loop
+
+	test_timers[0]= clock(); test_timers[1]= clock(); test_timers[2] = clock();
 
 	/* Main Run Loop */
 	while(1) {
@@ -273,8 +282,18 @@ void timer()
 			if ((lastIncrTime[i] - Timer_readValue()) >= incrPeriod[i]) {
 				taskFunctions[i](&timeValues[i], mode);
 				lastIncrTime[i] -= incrPeriod[i];
+
+				if (i != 0) {
+					test_timers[i-1] = clock() - test_timers[i-1];
+					t_elapsed = ((double)test_timers[i-1])/CLOCKS_PER_SEC; // in seconds
+
+					printf("%s: time since last = %f \n", t_names[i-1], t_elapsed);
+
+					test_timers[i-1] = clock();
+				}
 			}
 		}
+
 		// LEDs fill up every second then reset back to 0
 		*LED_ptr =  ~((signed int) -1 << (timeValues[0]/10)+1);
 
