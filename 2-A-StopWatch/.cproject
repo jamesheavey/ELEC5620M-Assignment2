@@ -61,7 +61,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="ELEC5620M-Student-jamesheavey|ELEC5620M-Drivers|Drivers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="ELEC5620M-Student-jamesheavey" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ELEC5620M-Student-jamesheavey"/>
 					</sourceEntries>
 				</configuration>
