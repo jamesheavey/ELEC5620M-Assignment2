@@ -246,7 +246,7 @@ void timer()
 
 	bool mode = false; int splitNum = 0; int i;
 
-	// Testing
+	// TESTING
 	double t_elapsed;
 	clock_t test_timer;
 
@@ -258,7 +258,7 @@ void timer()
 
 	Timer_setLoad(0xFFFFFFFF);  // reset timer before main loop
 
-	test_timer = clock();
+	test_timer = clock();       // Begin test clock
 
 	/* Main Run Loop */
 	while(1) {
@@ -282,11 +282,12 @@ void timer()
 				taskFunctions[i](&timeValues[i], mode);
 				lastIncrTime[i] -= incrPeriod[i];
 
-				if (i == 1) {
+				// TESTING
+				if (i == 2) {
 					test_timer = clock() - test_timer;
 					t_elapsed = ((double)test_timer)/CLOCKS_PER_SEC; // in seconds
 
-					printf("%s: time since last = %f \n", "SECONDS", t_elapsed);
+					printf("%s: time since last = %f \n", "MINUTES", t_elapsed);
 
 					test_timer = clock();
 				}
