@@ -40,10 +40,10 @@ void reset_lcd()
 	// clear display
 	LT24_clearDisplay(LT24_BLACK);
 
-	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 20 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 80 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 140 , 20, 5, 8, 3);
-	LT24_drawCharDoubleDec(0, LT24_WHITE, LT24_BLACK, 200 , 25, 5, 8, 2);
+	LT24_drawDoubleDec(0, LT24_WHITE, LT24_BLACK, 20 , 20, 5, 8, 3);
+	LT24_drawDoubleDec(0, LT24_WHITE, LT24_BLACK, 80 , 20, 5, 8, 3);
+	LT24_drawDoubleDec(0, LT24_WHITE, LT24_BLACK, 140 , 20, 5, 8, 3);
+	LT24_drawDoubleDec(0, LT24_WHITE, LT24_BLACK, 200 , 25, 5, 8, 2);
 
 	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, 65, 20, 5, 8, 3);
 	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, 125, 20, 5, 8, 3);
@@ -62,14 +62,14 @@ void set_7seg(unsigned int timeValues[], bool mode)
 void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum)
 {
 	// draw split number
-	LT24_drawCharDoubleDec(splitNum, LT24_WHITE, LT24_BLACK, x-2*(5*scale)-30, y, 5, 8, scale);
+	LT24_drawDoubleDec(splitNum, LT24_WHITE, LT24_BLACK, x-2*(5*scale)-30, y, 5, 8, scale);
 	LT24_drawChar(BF_fontMap[29], LT24_WHITE, LT24_BLACK, x-(5*scale) -10, y, 5, 8, scale);
 
 	// draw timer values
-	LT24_drawCharDoubleDec(timeValues[3], LT24_WHITE, LT24_BLACK, x , y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[2], LT24_WHITE, LT24_BLACK, x +2*(2*5*scale), y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[1], LT24_WHITE, LT24_BLACK, x +4*(2*5*scale), y, 5, 8, scale);
-	LT24_drawCharDoubleDec(timeValues[0], LT24_WHITE, LT24_BLACK, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
+	LT24_drawDoubleDec(timeValues[3], LT24_WHITE, LT24_BLACK, x , y, 5, 8, scale);
+	LT24_drawDoubleDec(timeValues[2], LT24_WHITE, LT24_BLACK, x +2*(2*5*scale), y, 5, 8, scale);
+	LT24_drawDoubleDec(timeValues[1], LT24_WHITE, LT24_BLACK, x +4*(2*5*scale), y, 5, 8, scale);
+	LT24_drawDoubleDec(timeValues[0], LT24_WHITE, LT24_BLACK, x +6*(2*5*scale), (y+8*scale/2), 5, 8, scale/2);
 
 	// timer timer markings ':' and '.'
 	LT24_drawChar(BF_fontMap[26], LT24_WHITE, LT24_BLACK, x +1.5*(2*5*scale), y, 5, 8, scale);
@@ -94,7 +94,7 @@ void intro()
 	int n=1; int i=0; int j; int k=0; int x=6; int z=0;
 
 	// clear edge capture flags, on recursion reset
-	*key_ptr = *key_ptr;
+	*key_ptr = 0xF;
 
 	Timer_setLoad(0xFFFFFFFF);
 	LT24_clearDisplay(LT24_BLACK);
@@ -140,7 +140,7 @@ void intro()
 	// clear LEDs
 	*LED_ptr = 0;
 	// clear edge capture flags
-	*key_ptr = *key_ptr;
+	*key_ptr = 0xF;
 }
 
 // Function to pause the timer on button press
@@ -150,13 +150,13 @@ void pause()
 	Timer_setControl(SCALER, 0, 1, 0);
 
 	// clear edge capture flags
-	*key_ptr = *key_ptr;
+	*key_ptr = 0xF;
 
 	// poll key presses until the pause key is pressed again
 	while (!(*key_ptr & 0x4)){HPS_ResetWatchdog();}
 
 	// clear edge capture flags
-	*key_ptr = *key_ptr;
+	*key_ptr = 0xF;
 
 	// re-enable timer
 	Timer_setControl(SCALER, 0, 1, 1);
@@ -176,7 +176,7 @@ void split(unsigned int timeValues[], int *splitNum)
 	*splitNum += 1;
 
 	// clear edge capture flags
-	*key_ptr = *key_ptr;
+	*key_ptr = 0xF;
 }
 
 // Function to toggle hour mode
@@ -184,7 +184,7 @@ void mode_toggle(bool* mode)
 {
 	*mode = !(*mode);
 	// clear edge capture flags
-	*key_ptr = *key_ptr;
+	*key_ptr = 0xF;
 }
 
 // Increment hundredths timer value, display values
@@ -192,10 +192,11 @@ void hundredths(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 100;
 
+	// update 7Segment display with current time values
 	DE1SoC_SevenSeg_SetDoubleDec(0 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 200, 25, 5, 8, 2);
+	LT24_drawDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 200, 25, 5, 8, 2);
 }
 
 // Increment seconds timer value, display values
@@ -203,10 +204,11 @@ void seconds(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 60;
 
+	// update 7Segment display with current time values
 	DE1SoC_SevenSeg_SetDoubleDec(2 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 140, 20, 5, 8, 3);
+	LT24_drawDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 140, 20, 5, 8, 3);
 }
 
 // Increment minutes timer value, display values
@@ -214,10 +216,11 @@ void minutes(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 60;
 
+	// update 7Segment display with current time values
 	DE1SoC_SevenSeg_SetDoubleDec(4 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 80, 20, 5, 8, 3);
+	LT24_drawDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 80, 20, 5, 8, 3);
 }
 
 // Increment hours timer value, display values
@@ -225,12 +228,11 @@ void hours(unsigned int* timeValue, bool mode)
 {
 	*timeValue = (*timeValue +1)% 24;
 
-	// update 7Segment display with new time values
-
+	// update 7Segment display with current time values
 	DE1SoC_SevenSeg_SetDoubleDec(6 - 2*mode, *timeValue);
 
 	// update LCD display with current time value
-	LT24_drawCharDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 20, 20, 5, 8, 3);
+	LT24_drawDoubleDec(*timeValue, LT24_WHITE, LT24_BLACK, 20, 20, 5, 8, 3);
 }
 
 void timer()
