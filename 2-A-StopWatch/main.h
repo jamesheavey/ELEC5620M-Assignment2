@@ -2,8 +2,8 @@
  * main.h
  *
  *  Created on: Mar 19, 2021
- *      Author: 		  James
- *      SID: 			    201198933
+ *      Author:       James
+ *      SID:          201198933
  *      Affiliation: 	University of Leeds
  *
  * DESCRIPTION:
@@ -31,7 +31,7 @@ volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;   // LEDs base add
 const unsigned int SCALER = 200 - 1;
 const unsigned int PERIOD = 225000000/(SCALER+1);               // A9 Private timer freq. = 225MHz
 
-const unsigned int 	TIMER_SIZE 	= 4;						                // hundredths, seconds, minutes, hours
+const unsigned int 	TIMER_SIZE 	= 4;                      // hundredths, seconds, minutes, hours
 
 // TYPE DEFINITIONS
 typedef void (*TaskFunction)(unsigned int*, bool);
@@ -61,7 +61,7 @@ void reset_lcd( void );
 // Split display location determined my splitNum value
 void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum);
 
-
+  
 /*
  * 	SEVEN-SEGEMNT FUNCTIONS
  */
@@ -72,7 +72,7 @@ void set_7seg(unsigned int timeValues[], bool mode);
 
 /*
  * BUTTON FUNCTIONS
- */
+ */  
 
 // Function to pause the timer on button press
 void pause( void );
@@ -113,7 +113,7 @@ void intro( void );
  * 	MAIN STOPWATCH FUNCTION
  */
 
-/// main stopwatch function while loop
+// main stopwatch function while loop
 void stopwatch( void );
 
 #endif /* MAIN_H_ */
