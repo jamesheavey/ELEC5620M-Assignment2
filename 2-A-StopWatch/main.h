@@ -71,14 +71,6 @@ void set_7seg(unsigned int timeValues[], bool mode);
 
 
 /*
- *	INTRO FUNCTION
- */
-
-// Function to introduce the timer on the Seven Segment displays
-void intro( void );
-
-
-/*
  * BUTTON FUNCTIONS
  */
 
@@ -93,7 +85,7 @@ void mode_toggle(bool* mode);
 
 
 /*
- * 	TIMER INCREMENT FUNCTIONS
+ * 	TIME UNIT INCREMENT FUNCTIONS
  */
 
 // Increment hundredths timer value, display values
@@ -110,10 +102,18 @@ void hours(unsigned int* timeValue, bool mode);
 
 
 /*
- * 	MAIN TIMER FUNCTION
+ *	INTRO FUNCTION
  */
 
-/// main timer function while loop
-void timer( void );
+// Function to introduce the timer on the Seven Segment displays
+void intro( void );
+
+
+/*
+ * 	MAIN STOPWATCH FUNCTION
+ */
+
+/// main stopwatch function while loop
+void stopwatch( void );
 
 #endif /* MAIN_H_ */
