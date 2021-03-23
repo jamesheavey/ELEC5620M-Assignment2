@@ -2,9 +2,9 @@
  * main.h
  *
  *  Created on: Mar 19, 2021
- *      Author:       James
- *      SID:          201198933
- *      Affiliation: 	University of Leeds
+ *      Author:			James
+ *      SID:			201198933
+ *      Affiliation:	University of Leeds
  *
  * DESCRIPTION:
  * This file includes all the functions
@@ -24,14 +24,14 @@
 #include "BasicFont/BasicFont.h"
 
 // ADDRESS DEFINITIONS
-volatile unsigned int *key_ptr = (unsigned int *) 0xFF20005C;   // key buttons edge capture base address
-volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;   // LEDs base address
+volatile unsigned int *key_ptr = (unsigned int *) 0xFF20005C;	// key buttons edge capture base address
+volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;	// LEDs base address
 
 // CONSTANT DEFINITIONS
 const unsigned int SCALER = 200 - 1;
-const unsigned int PERIOD = 225000000/(SCALER+1);               // A9 Private timer freq. = 225MHz
+const unsigned int PERIOD = 225000000/(SCALER+1);				// A9 Private timer freq. = 225MHz
 
-const unsigned int 	TIMER_SIZE 	= 4;                      // hundredths, seconds, minutes, hours
+const unsigned int 	TIMER_SIZE 	= 4;							// hundredths, seconds, minutes, hours
 
 // TYPE DEFINITIONS
 typedef void (*TaskFunction)(unsigned int*, bool);
@@ -50,7 +50,7 @@ void init_lcd( void );
 
 
 /*
- * 	LCD FUNCTIONS
+ *	LCD FUNCTIONS
  */
 
 // Clears the display, writes starting timer structure
@@ -63,7 +63,7 @@ void draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum
 
   
 /*
- * 	SEVEN-SEGEMNT FUNCTIONS
+ *	SEVEN-SEGEMNT FUNCTIONS
  */
 
 // used to set all the seven segment displays on reset or mode toggle
@@ -71,7 +71,7 @@ void set_7seg(unsigned int timeValues[], bool mode);
 
 
 /*
- * BUTTON FUNCTIONS
+ *	BUTTON FUNCTIONS
  */  
 
 // Function to pause the timer on button press
@@ -85,7 +85,7 @@ void mode_toggle(bool* mode);
 
 
 /*
- * 	TIME UNIT INCREMENT FUNCTIONS
+ *	TIME UNIT INCREMENT FUNCTIONS
  */
 
 // Increment hundredths timer value, display values
@@ -110,7 +110,7 @@ void intro( void );
 
 
 /*
- * 	MAIN STOPWATCH FUNCTION
+ *	MAIN STOPWATCH FUNCTION
  */
 
 // main stopwatch function while loop

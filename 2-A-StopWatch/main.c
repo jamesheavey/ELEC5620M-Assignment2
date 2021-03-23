@@ -225,11 +225,11 @@ void intro()
 
 		// LCD colour update and print
 		if ((lastIncrTime[2] - Timer_readValue()) >= introPeriods[2]){
-			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[z%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);			// T
+			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[z%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);				// T
 			LT24_drawVertMovingChar(BF_fontMap[41], colourMap[z%32], LT24_BLACK, x + 48, y[(k+1)%12], 5, 8, 6, 10);		// I
-			LT24_drawVertMovingChar(BF_fontMap[45], colourMap[z%32], LT24_BLACK, x + 2*48, y[(k+2)%12], 5, 8, 6, 10);  	// M
-			LT24_drawVertMovingChar(BF_fontMap[37], colourMap[z%32], LT24_BLACK, x + 3*48, y[(k+3)%12], 5, 8, 6, 10);  	// E
-			LT24_drawVertMovingChar(BF_fontMap[50], colourMap[z%32], LT24_BLACK, x + 4*48, y[(k+4)%12], 5, 8, 6, 10);  	// R
+			LT24_drawVertMovingChar(BF_fontMap[45], colourMap[z%32], LT24_BLACK, x + 2*48, y[(k+2)%12], 5, 8, 6, 10);	// M
+			LT24_drawVertMovingChar(BF_fontMap[37], colourMap[z%32], LT24_BLACK, x + 3*48, y[(k+3)%12], 5, 8, 6, 10);	// E
+			LT24_drawVertMovingChar(BF_fontMap[50], colourMap[z%32], LT24_BLACK, x + 4*48, y[(k+4)%12], 5, 8, 6, 10);	// R
 
 			z++;
 
@@ -254,10 +254,10 @@ void intro()
 
 void stopwatch()
 {
-	unsigned int lastIncrTime[TIMER_SIZE] = {0}; 						// all timers start incrementing immediately
-	unsigned int timeValues[TIMER_SIZE] = {0}; 						// all time values initialised to 0
+	unsigned int lastIncrTime[TIMER_SIZE] = {0};											// all timers start incrementing immediately
+	unsigned int timeValues[TIMER_SIZE] = {0};												// all time values initialised to 0
 	const unsigned int incrPeriod[TIMER_SIZE] = {PERIOD/100,PERIOD,PERIOD*60,PERIOD*3600}; 	// set the increment period for all timer units
-	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};	// define task function struct to call increment functions when required
+	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};		// define task function struct to call increment functions when required
 
 	bool mode = false; int splitNum = 0; int i;
 
@@ -267,11 +267,11 @@ void stopwatch()
 
 	reset_lcd();
 
-	set_7seg(timeValues, mode);	 // Initialise to '00 00 00'
+	set_7seg(timeValues, mode);		// Initialise to '00 00 00'
 
-	Timer_setLoad(0xFFFFFFFF);  	// reset timer before main loop
+	Timer_setLoad(0xFFFFFFFF);		// reset timer before main loop
 
-//	test_timer = clock();		// Begin test clock
+//	test_timer = clock();			// Begin test clock
 
 	/* Main Run Loop */
 	while(1) {
@@ -286,7 +286,7 @@ void stopwatch()
 
 		// poll key 4
 		if (timeValues[3] >= 1) { mode = true; set_7seg(timeValues, mode); }			// if it has been more than 1 hour, force hour mode,
-		else if (*key_ptr & 0x8) { mode_toggle(&mode); set_7seg(timeValues, mode); }		// else toggle hour mode
+		else if (*key_ptr & 0x8) { mode_toggle(&mode); set_7seg(timeValues, mode); }	// else toggle hour mode
 
 		// if elapsed time is greater than any specified unit period,
 		// increment the associated timeValue with task scheduler
@@ -297,6 +297,7 @@ void stopwatch()
 
 //				// TESTING
 //				if (i == 2) {
+//					// displays the cumulative times at selected unit incrment
 //					t_elapsed = ((double)(clock() - test_timer)/CLOCKS_PER_SEC);
 //					printf("%s: Private timer value = %d. Time.h value = %f. \n", "MINUTES",timeValues[i]*60,t_elapsed);
 //				}
