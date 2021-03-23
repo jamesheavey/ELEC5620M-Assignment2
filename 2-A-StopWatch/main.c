@@ -193,9 +193,9 @@ void intro()
 
 	// colour map imported from '3-1-Mandelbrot' code, supplied by UoL
 	unsigned short colourMap[32] = {0x0008,0x012C,0x0271,0x0396,0x04DB,0x061F,0x157C,0x2CFA,
-									0x4457,0x5BD4,0x7351,0x8AAE,0xA22B,0xB9A8,0xD105,0xE082,
-									0xF800,0xF8C0,0xF980,0xFA40,0xFB00,0xFBC0,0xFC80,0xFD40,
-									0xFE00,0xDD41,0xBC82,0x9BC3,0x7B04,0x5A45,0x3986,0x18C7};
+					0x4457,0x5BD4,0x7351,0x8AAE,0xA22B,0xB9A8,0xD105,0xE082,
+					0xF800,0xF8C0,0xF980,0xFA40,0xFB00,0xFBC0,0xFC80,0xFD40,
+					0xFE00,0xDD41,0xBC82,0x9BC3,0x7B04,0x5A45,0x3986,0x18C7};
 
 	int n=1; int i=0; int j; int k=0; int x=6; int z=0;
 
@@ -225,7 +225,7 @@ void intro()
 
 		// LCD colour update and print
 		if ((lastIncrTime[2] - Timer_readValue()) >= introPeriods[2]){
-			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[z%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);				// T
+			LT24_drawVertMovingChar(BF_fontMap[52], colourMap[z%32], LT24_BLACK, x, y[k%12], 5, 8, 6, 10);			// T
 			LT24_drawVertMovingChar(BF_fontMap[41], colourMap[z%32], LT24_BLACK, x + 48, y[(k+1)%12], 5, 8, 6, 10);		// I
 			LT24_drawVertMovingChar(BF_fontMap[45], colourMap[z%32], LT24_BLACK, x + 2*48, y[(k+2)%12], 5, 8, 6, 10);	// M
 			LT24_drawVertMovingChar(BF_fontMap[37], colourMap[z%32], LT24_BLACK, x + 3*48, y[(k+3)%12], 5, 8, 6, 10);	// E
@@ -254,10 +254,10 @@ void intro()
 
 void stopwatch()
 {
-	unsigned int lastIncrTime[TIMER_SIZE] = {0};											// all timers start incrementing immediately
-	unsigned int timeValues[TIMER_SIZE] = {0};												// all time values initialised to 0
+	unsigned int lastIncrTime[TIMER_SIZE] = {0};						// all timers start incrementing immediately
+	unsigned int timeValues[TIMER_SIZE] = {0};						// all time values initialised to 0
 	const unsigned int incrPeriod[TIMER_SIZE] = {PERIOD/100,PERIOD,PERIOD*60,PERIOD*3600}; 	// set the increment period for all timer units
-	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};		// define task function struct to call increment functions when required
+	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};	// define task function struct to call increment functions when required
 
 	bool mode = false; int splitNum = 0; int i;
 
@@ -285,7 +285,7 @@ void stopwatch()
 		if (*key_ptr & 0x4) { pause(); }
 
 		// poll key 4
-		if (timeValues[3] >= 1) { mode = true; set_7seg(timeValues, mode); }			// if it has been more than 1 hour, force hour mode,
+		if (timeValues[3] >= 1) { mode = true; set_7seg(timeValues, mode); }		// if it has been more than 1 hour, force hour mode,
 		else if (*key_ptr & 0x8) { mode_toggle(&mode); set_7seg(timeValues, mode); }	// else toggle hour mode
 
 		// if elapsed time is greater than any specified unit period,
