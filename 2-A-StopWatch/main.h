@@ -2,8 +2,8 @@
  * main.h
  *
  *  Created on: Mar 19, 2021
- *      Author: 		James
- *      SID: 			201198933
+ *      Author: 		  James
+ *      SID: 			    201198933
  *      Affiliation: 	University of Leeds
  *
  * DESCRIPTION:
@@ -24,14 +24,14 @@
 #include "BasicFont/BasicFont.h"
 
 // ADDRESS DEFINITIONS
-volatile unsigned int *key_ptr = (unsigned int *) 0xFF20005C;  // key buttons edge capture base address
-volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;  // LEDs base address
+volatile unsigned int *key_ptr = (unsigned int *) 0xFF20005C;   // key buttons edge capture base address
+volatile unsigned int *LED_ptr = (unsigned int *) 0xFF200000;   // LEDs base address
 
 // CONSTANT DEFINITIONS
 const unsigned int SCALER = 200 - 1;
-const unsigned int PERIOD = 225000000/(SCALER+1); 			   // A9 Private timer freq. = 225MHz
+const unsigned int PERIOD = 225000000/(SCALER+1);               // A9 Private timer freq. = 225MHz
 
-const unsigned int 	TIMER_SIZE 	= 4;						   // hundredths, seconds, minutes, hours
+const unsigned int 	TIMER_SIZE 	= 4;						                // hundredths, seconds, minutes, hours
 
 // TYPE DEFINITIONS
 typedef void (*TaskFunction)(unsigned int*, bool);
