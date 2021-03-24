@@ -5,6 +5,16 @@ This repository contains source and header C files to that define the function o
 
 A video demonstration of the implemented code can be seen using the link provided: [VIDEO DEMO](https://github.com/leeds-embedded-systems/ELEC5620M-Assignment2-jamesheavey/blob/6b7727a44f356afdfd38136ff60aa7a4e5cc5345/Stop_Watch_Demo.mp4)
 
+## Stopwatch Functionality
+The digital stopwatch designed during this project exhibits the all the required functionalities specified in the brief, including additional functionality and user interfacing for ease of use. Upon starting the stopwatch code, an introduction screen appears, remaining in this state until a button is pressed to start the timer. Once started the elapsed time is displayed on both the LCD and the seven segment displays in real time. Four buttons are available to the user.
+
+* **BUTTON 1:** Resets the timer, returning to the, returning to the introduction screen
+* **BUTTON 2:** Pause the timer
+* **BUTTON 3:** Split (displayed on the LCD)
+* **BUTTON 4:** Toggle the seven segment display mode from MM:SS:FF to HH:MM:SS. 
+
+This encompasses all the user requirements for a suitable digital stopwatch.
+
 ## Function List
 Each of the functions designed for this project are listed allow, along with their inputs/outouts and purpose within the system.
 
