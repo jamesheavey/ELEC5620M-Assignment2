@@ -14,7 +14,7 @@ Each of the functions designed for this project are listed allow, along with the
 | `init_LCD` | void | Initialise the LT24 LCD. |
 | `reset_LCD` | void | Clear the screen and write the preset timer structure '00:00:00.00'. |
 | `draw_split` | timeValues, x, y, scale, splitNum | Draws the current timeValues on the LCD at the specified (x,y) coordinates. |
-| `intro` | void | Intro screen loop, displays a message on the LCD and the Seven Segments. Exits on button 1 press. |
+| `intro` | void | Intro screen loop, displays a message on the LCD and the Seven Segments. Calles `stopwatch()` on button 1 press. |
 | `pause` | void | Disables the timer, waits until button 2 is pressed again, re-enables timer.  Function called when _**button 3**_ is pressed in the main timer loop |
 | `split` | timeValues, &splitNum | Increment the splitNum, call `draw_split`, wait until split button is released. Function called when _**button 2**_ is pressed in the main timer loop |
 | `mode_toggle` | &mode | Toggles mode variable transitioning between hour:min:sec and min:sec:hundredth modes. Function called when _**button 4**_ is pressed in the main timer loop. |
@@ -22,7 +22,7 @@ Each of the functions designed for this project are listed allow, along with the
 | `seconds` | &timeValue | Increments the 'seconds' array variable value using a pointer to its address. This function is called by a task scheduler when its associated time-period condition is fulfilled. |
 | `minutes` | &timeValue | Increments the 'minutes' array variable value using a pointer to its address. This function is called by a task scheduler when its associated time-period condition is fulfilled. |
 | `hours` | &timeValue | Increments the 'hours' array variable value using a pointer to its address. This function is called by a task scheduler when its associated time-period condition is fulfilled. |
-| `timer` | void | The main timer function. Contains while loop for both the core clock task scheduler and button press polling. |
+| `stopwatch` | void | The main stopwatch function. Contains while loop for both the core clock task scheduler and button press polling. Calls `intro()` on reset. |
 
 ---
 
