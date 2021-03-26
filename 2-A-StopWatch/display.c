@@ -60,7 +60,7 @@ void LCD_draw_moving_msg(int x, int y, int colour)
 {
 	// draw split number
 	LT24_drawVertMovingChar(LCD_msg[0], colourMap[colour%32], LT24_BLACK, x, y_range[y%12], 5, 8, 6, 10);			// T
-	LT24_drawVertMovingChar(LCD_msg[1], colourMap[(colour+1)%32], LT24_BLACK, x + 48, y_range[(y+1)%12], 5, 8, 6, 10);		// I
+	LT24_drawVertMovingChar(LCD_msg[1], colourMap[(colour+1)%32], LT24_BLACK, x + 48, y_range[(y+1)%12], 5, 8, 6, 10);	// I
 	LT24_drawVertMovingChar(LCD_msg[2], colourMap[(colour+2)%32], LT24_BLACK, x + 2*48, y_range[(y+2)%12], 5, 8, 6, 10);	// M
 	LT24_drawVertMovingChar(LCD_msg[3], colourMap[(colour+3)%32], LT24_BLACK, x + 3*48, y_range[(y+3)%12], 5, 8, 6, 10);	// E
 	LT24_drawVertMovingChar(LCD_msg[4], colourMap[(colour+4)%32], LT24_BLACK, x + 4*48, y_range[(y+4)%12], 5, 8, 6, 10);	// R
