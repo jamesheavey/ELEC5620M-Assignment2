@@ -177,7 +177,7 @@ void stopwatch()
 {
 	unsigned int lastIncrTime[TIMER_SIZE] = {0};						// all timers start incrementing immediately
 	unsigned int timeValues[TIMER_SIZE] = {0};						// all time values initialised to 0
-	unsigned int splitValues[SPLIT_MAX][TIMER_SIZE];				// 2D array to store most recent splits
+	unsigned int splitValues[SPLIT_MAX][TIMER_SIZE];					// 2D array to store most recent splits
 	const unsigned int incrPeriod[TIMER_SIZE] = {PERIOD/100,PERIOD,PERIOD*60,PERIOD*3600}; 	// set the increment period for all timer units
 	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};	// define task function struct to call increment functions when required
 
@@ -191,7 +191,7 @@ void stopwatch()
 
 	SevenSeg_set(timeValues, mode);		// Initialise to '00 00 00'
 
-	pause();						// wait for keypress to start
+	pause();				// wait for keypress to start
 
 	Timer_setLoad(0xFFFFFFFF);		// reset timer before main loop
 
