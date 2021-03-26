@@ -191,7 +191,8 @@ void stopwatch()
 
 	SevenSeg_set(timeValues, mode);		// Initialise to '00 00 00'
 
-	pause();				// wait for keypress to start
+	while(!(*key_ptr & 0x1)) {HPS_ResetWatchdog();}		// wait for keypress to start
+	*key_ptr = 0xF;
 
 	Timer_setLoad(0xFFFFFFFF);		// reset timer before main loop
 
