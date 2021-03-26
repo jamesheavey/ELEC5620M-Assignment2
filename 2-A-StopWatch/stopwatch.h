@@ -27,6 +27,7 @@ const unsigned int SCALER = 200 - 1;
 const unsigned int PERIOD = 225000000/(SCALER+1);		// A9 Private timer freq. = 225MHz
 
 const unsigned int TIMER_SIZE = 4;				// hundredths, seconds, minutes, hours
+const unsigned int SPLIT_MAX = 10;				// Max number of splits displayed on screen simultaneously
 
 // TYPE DEFINITIONS
 typedef void (*TaskFunction)(unsigned int*);
@@ -36,6 +37,7 @@ typedef void (*TaskFunction)(unsigned int*);
  *	TIMER INITIALISATION
  */
 
+// Initialise A9 Private timer with preset parameters
 void Timer_init( void );
 
 /*
@@ -45,7 +47,7 @@ void Timer_init( void );
 // Function to pause the timer on button press
 void pause( void );
 
-// Function to print split value to LCD on button press
+// Function to print split value to LCD on button press. Pointer parameters to update in main loop.
 void split(unsigned int timeValues[], unsigned int splitValues[][TIMER_SIZE], int *splitNum);
 
 // Function to toggle hour mode
@@ -56,16 +58,16 @@ void mode_toggle(bool* mode);
  *	TIME UNIT INCREMENT FUNCTIONS
  */
 
-// Increment hundredths timer value, display values
+// Increment hundredths timer value, display value on LCD
 void hundredths(unsigned int* timeValue);
 
-// Increment seconds timer value, display values
+// Increment seconds timer value, display value on LCD
 void seconds(unsigned int* timeValue);
 
-// Increment minutes timer value, display values
+// Increment minutes timer value, display value LCD
 void minutes(unsigned int* timeValue);
 
-// Increment hours timer value, display values
+// Increment hours timer value, display value LCD
 void hours(unsigned int* timeValue);
 
 
@@ -73,7 +75,7 @@ void hours(unsigned int* timeValue);
  *	INTRODUCTION FUNCTION
  */
 
-// Function to introduce the timer on the Seven Segment displays
+// Function to introduce the timer on the Seven Segment displays and LCD
 void introduction( void );
 
 
@@ -81,7 +83,7 @@ void introduction( void );
  *	MAIN STOPWATCH FUNCTION
  */
 
-// main stopwatch function while loop
+// Function containing main stopwatch function while loop.
 void stopwatch( void );
 
 

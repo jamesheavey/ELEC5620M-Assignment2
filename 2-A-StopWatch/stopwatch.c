@@ -17,38 +17,43 @@ void Timer_init()
 	Timer_setControl(SCALER, 0, 1, 1);
 }
 
+
 // Function to print split value to LCD on button press
 void split(unsigned int timeValues[], unsigned int splitValues[][TIMER_SIZE], int *splitNum)
 {
 	int i, j, k;
 
-	if(*splitNum >= 10){ k = 9; }
+	// increment splitNum
+	*splitNum += 1;
+
+	// set split limit at 10 (max number that can fit on LCD screen at once)
+	if(*splitNum >= SPLIT_MAX){ k = SPLIT_MAX; }
 
 	else{ k = *splitNum; }
 
-	for(i = k; i > 0; i--){
+	// move all previously saved splits down one index, losing last value
+	for(i = k-1; i > 0; i--){
 		for(j = 0; j < TIMER_SIZE; j++){
 			splitValues[i][j] = splitValues[i-1][j];
 		}
 	}
 
+	// insert most recent split values at the front of splitValue array
 	for(j = 0; j < TIMER_SIZE; j++){
 		splitValues[0][j] = timeValues[j];
 	}
 
-	for(i = 0; i < k+1; i++){
-		LCD_draw_split(splitValues[i], 80, 60+25*(i), 2, *splitNum - i + 1);
+	// redraw splits to the LCD in correct positions
+	for(i = 0; i < k; i++){
+		LCD_draw_split(splitValues[i], 80, 60+25*(i), 2, *splitNum - i);
 	}
-
-	// increment splitNum
-	*splitNum += 1;
 
 	// clear edge capture flags
 	*key_ptr = 0xF;
 }
 
 
-// Function to pause the timer on button press
+// Function to pause the stopwatch on button press
 void pause()
 {
 	// disable the timer by setting enable bit to 0
@@ -78,7 +83,7 @@ void mode_toggle(bool* mode)
 }
 
 
-// Increment hundredths timer value, display values
+// Increment hundredths timer value, display values on LCD
 void hundredths(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 100;
@@ -88,7 +93,7 @@ void hundredths(unsigned int* timeValue)
 }
 
 
-// Increment seconds timer value, display values
+// Increment seconds timer value, display values on LCD
 void seconds(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 60;
@@ -98,7 +103,7 @@ void seconds(unsigned int* timeValue)
 }
 
 
-// Increment minutes timer value, display values
+// Increment minutes timer value, display values on LCD
 void minutes(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 60;
@@ -108,7 +113,7 @@ void minutes(unsigned int* timeValue)
 }
 
 
-// Increment hours timer value, display values
+// Increment hours timer value, display values on LCD
 void hours(unsigned int* timeValue)
 {
 	*timeValue = (*timeValue +1)% 24;
@@ -118,16 +123,18 @@ void hours(unsigned int* timeValue)
 }
 
 
-// Function to introduce the timer on the Seven Segment displays
+// Function to introduce the stopwatch on the Seven Segment displays and LCD
 void introduction()
 {
 	unsigned int lastIncrTime [3] = {0};
 	unsigned int introPeriods [3] = {PERIOD/5, PERIOD/20, PERIOD/50};
 
-	int n=1; int i=0; int j=0; int k=0; int x=6;
+	int n=1; int i=0; int colour=0; int y=0; int x=6;
 
+	// clear the LCD
 	LCD_reset();
 
+	// remain in display loop until any key pressed
 	while (!(*key_ptr)) {
 
 		// LED and seven seg update
@@ -143,15 +150,15 @@ void introduction()
 
 		// LCD position update
 		if ((lastIncrTime[1] - Timer_readValue()) >= introPeriods[1]){
-			j++;
+			y++;
 			lastIncrTime[1] -= introPeriods[1];
 		}
 
 		// LCD colour update and print
 		if ((lastIncrTime[2] - Timer_readValue()) >= introPeriods[2]){
-			k++;
+			colour++;
 
-			LCD_draw_moving_msg(x, j, k);
+			LCD_draw_moving_msg(x, y, colour);
 
 			lastIncrTime[2] -= introPeriods[2];
 		}
@@ -170,9 +177,10 @@ void stopwatch()
 {
 	unsigned int lastIncrTime[TIMER_SIZE] = {0};						// all timers start incrementing immediately
 	unsigned int timeValues[TIMER_SIZE] = {0};						// all time values initialised to 0
+	unsigned int splitValues[SPLIT_MAX][TIMER_SIZE];				// 2D array to store most recent splits
 	const unsigned int incrPeriod[TIMER_SIZE] = {PERIOD/100,PERIOD,PERIOD*60,PERIOD*3600}; 	// set the increment period for all timer units
 	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};	// define task function struct to call increment functions when required
-	unsigned int splitValues[10][TIMER_SIZE];
+
 	bool mode = false; int splitNum = 0; int i;
 
 	//	/* TESTING */
@@ -183,15 +191,15 @@ void stopwatch()
 
 	SevenSeg_set(timeValues, mode);		// Initialise to '00 00 00'
 
-	while(!(*key_ptr & 0x1)) {HPS_ResetWatchdog();}
-	*key_ptr = 0xF;
+	pause();						// wait for keypress to start
 
 	Timer_setLoad(0xFFFFFFFF);		// reset timer before main loop
 
 //	test_timer = clock();			// Begin test clock
 
-	/* Main Run Loop */
+	/* Main Stopwatch Loop */
 	while(!(*key_ptr & 0x1)) {
+		// exit on key 1 press (reset)
 
 		// poll key 2
 		if (*key_ptr & 0x2) { split(timeValues, splitValues, &splitNum); }
@@ -211,7 +219,7 @@ void stopwatch()
 
 //				/* TESTING */
 //				if (i == 2) {
-//					// displays the cumulative times at selected unit incrment
+//					// displays the cumulative times at selected unit increment
 //					t_elapsed = ((double)(clock() - test_timer)/CLOCKS_PER_SEC);
 //					printf("%s: Private timer value = %d. Time.h value = %f. \n", "MINUTES",timeValues[i]*60,t_elapsed);
 //				}

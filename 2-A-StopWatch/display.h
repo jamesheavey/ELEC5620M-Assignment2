@@ -20,7 +20,7 @@ unsigned int SevenSeg_msg[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF
 signed char* LCD_msg[5]= {BF_fontMap[52], BF_fontMap[41], BF_fontMap[45], BF_fontMap[37], BF_fontMap[50]};
 
 // range of y-values for LCD message oscillation
-unsigned int y[12] = {106,116,126,136,146,156,166,156,146,136,126,116};
+unsigned int y_range[12] = {106,116,126,136,146,156,166,156,146,136,126,116};
 
 // colour map imported from '3-1-Mandelbrot' code, supplied by UoL
 unsigned short colourMap[32] = {0x0008,0x012C,0x0271,0x0396,0x04DB,0x061F,0x157C,0x2CFA,
@@ -32,8 +32,10 @@ unsigned short colourMap[32] = {0x0008,0x012C,0x0271,0x0396,0x04DB,0x061F,0x157C
  *	LCD FUNCTIONS
  */
 
+// Wrapper for driver function to send initialisation command to LCD
 void LCD_init( void );
 
+// Wrapper for driver function to clear LCD display
 void LCD_reset( void );
 
 // Clears the display, writes starting timer structure
@@ -44,10 +46,10 @@ void LCD_preset( void );
 // Split display location determined my splitNum value
 void LCD_draw_split(unsigned int timeValues[], int x, int y, int scale, int splitNum);
 
-void LCD_draw_moving_msg(int x, int j, int k);
+// Function to draw vertically oscillating, colour changing message on the LCD.
+void LCD_draw_moving_msg(int x, int y, int colour);
 
-void LCD_clear(int y);
-
+// Function to update individual timer units at specified location.
 void LCD_draw_unit(int timeValue, int x, int y, int scale);
 
 /*
@@ -56,7 +58,5 @@ void LCD_draw_unit(int timeValue, int x, int y, int scale);
 
 // used to set all the seven segment displays on reset or mode toggle
 void SevenSeg_set(unsigned int timeValues[], bool mode);
-
-void SevenSeg_display_character(int display, unsigned int character);
 
 #endif /* DISPLAY_H_ */
