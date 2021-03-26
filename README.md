@@ -3,7 +3,7 @@
 
 This repository contains source and header C files to that define the function of a digital timer a variety of user interfaces. The code was designed for and implemented on the DE1-SoC board. This code requires a number of drivers for each of the utilised hardware components, including: the A9 private timer, the 6 available Seven Segment displays and the LT24 LCD. This drivers can be observed in my personal [ELEC5620 driver repository](https://github.com/leeds-embedded-systems/ELEC5620M-Student-jamesheavey). 
 
-A video demonstration of the implemented code can be seen using the link provided: [VIDEO DEMO](https://github.com/leeds-embedded-systems/ELEC5620M-Assignment2-jamesheavey/blob/6b7727a44f356afdfd38136ff60aa7a4e5cc5345/Stop_Watch_Demo.mp4)
+A video demonstration of the implemented code can be seen using the link provided: [VIDEO DEMO](https://github.com/leeds-embedded-systems/ELEC5620M-Assignment2-jamesheavey/blob/5d7ad3b7e89ef0d2da8213bc19bd38fe8fdda51d/Stopwatch_Demo.mp4)
 
 ## Stopwatch Functionality
 The digital stopwatch designed during this project exhibits the all the required functionalities specified in the brief, including additional functionality and user interfacing for ease of use. Upon starting the stopwatch code, an introduction screen appears, remaining in this state until a button is pressed to start the timer. Once started the elapsed time is displayed on both the LCD and the seven segment displays in real time. Four buttons are available to the user.
