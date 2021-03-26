@@ -18,15 +18,29 @@ void Timer_init()
 }
 
 // Function to print split value to LCD on button press
-void split(unsigned int timeValues[], int *splitNum)
+void split(unsigned int timeValues[], unsigned int splitValues[][TIMER_SIZE], int *splitNum)
 {
-	// if spits extend off screen, clear the splits and start again at the top
-	if ((*splitNum % 10) == 0) { LCD_clear(60); }
+	int i, j, k;
 
-	// draw the splits at the specified location
-	LCD_draw_split(timeValues, 80, 60+25*(*splitNum % 10), 2, *splitNum + 1);
+	if(*splitNum >= 10){ k = 9; }
 
-	// increment splitNum address value
+	else{ k = *splitNum; }
+
+	for(i = k; i > 0; i--){
+		for(j = 0; j < TIMER_SIZE; j++){
+			splitValues[i][j] = splitValues[i-1][j];
+		}
+	}
+
+	for(j = 0; j < TIMER_SIZE; j++){
+		splitValues[0][j] = timeValues[j];
+	}
+
+	for(i = 0; i < k+1; i++){
+		LCD_draw_split(splitValues[i], 80, 60+25*(i), 2, *splitNum - i + 1);
+	}
+
+	// increment splitNum
 	*splitNum += 1;
 
 	// clear edge capture flags
@@ -158,7 +172,7 @@ void stopwatch()
 	unsigned int timeValues[TIMER_SIZE] = {0};						// all time values initialised to 0
 	const unsigned int incrPeriod[TIMER_SIZE] = {PERIOD/100,PERIOD,PERIOD*60,PERIOD*3600}; 	// set the increment period for all timer units
 	TaskFunction taskFunctions[TIMER_SIZE] = {&hundredths,&seconds,&minutes,&hours};	// define task function struct to call increment functions when required
-
+	unsigned int splitValues[10][TIMER_SIZE];
 	bool mode = false; int splitNum = 0; int i;
 
 	//	/* TESTING */
@@ -180,7 +194,7 @@ void stopwatch()
 	while(!(*key_ptr & 0x1)) {
 
 		// poll key 2
-		if (*key_ptr & 0x2) { split(timeValues, &splitNum); }
+		if (*key_ptr & 0x2) { split(timeValues, splitValues, &splitNum); }
 
 		// poll key 3
 		if (*key_ptr & 0x4) { pause(); }

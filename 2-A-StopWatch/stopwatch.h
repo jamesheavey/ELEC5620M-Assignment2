@@ -46,7 +46,7 @@ void Timer_init( void );
 void pause( void );
 
 // Function to print split value to LCD on button press
-void split(unsigned int timeValues[], int *splitNum);
+void split(unsigned int timeValues[], unsigned int splitValues[][TIMER_SIZE], int *splitNum);
 
 // Function to toggle hour mode
 void mode_toggle(bool* mode);
