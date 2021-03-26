@@ -13,8 +13,13 @@
 #include "BasicFont/BasicFont.h"
 #include "DE1SoC_SevenSeg/DE1SoC_SevenSeg.h"
 
+// 'bY JAmeS Uni OF LeedS' Characters for 7Seg display
 unsigned int SevenSeg_msg[27] = {0xF,0xF,0x9,0xA,0xF,0xB,0xC,0xD,0xE,0x6,0x8,0xF,0xF,0xF,0x0,0x1,0x2,0xF,0x3,0x4,0xF,0x5,0x6,0x6,0x7,0x8,0xF};
+
+// 'TIMER' Characters for LCD display
 signed char* LCD_msg[5]= {BF_fontMap[52], BF_fontMap[41], BF_fontMap[45], BF_fontMap[37], BF_fontMap[50]};
+
+// range of y-values for LCD message oscillation
 unsigned int y[12] = {106,116,126,136,146,156,166,156,146,136,126,116};
 
 // colour map imported from '3-1-Mandelbrot' code, supplied by UoL
@@ -26,6 +31,8 @@ unsigned short colourMap[32] = {0x0008,0x012C,0x0271,0x0396,0x04DB,0x061F,0x157C
 /*
  *	LCD FUNCTIONS
  */
+
+void LCD_init( void );
 
 void LCD_reset( void );
 
@@ -49,8 +56,6 @@ void LCD_draw_unit(int timeValue, int x, int y, int scale);
 
 // used to set all the seven segment displays on reset or mode toggle
 void SevenSeg_set(unsigned int timeValues[], bool mode);
-
-void SevenSeg_display_unit(int display, unsigned int timeValue);
 
 void SevenSeg_display_character(int display, unsigned int character);
 

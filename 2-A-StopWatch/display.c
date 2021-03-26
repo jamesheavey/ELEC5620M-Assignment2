@@ -7,6 +7,12 @@
 
 #include "display.h"
 
+// Sends command to initialise LCD
+void LCD_init()
+{
+	LT24_initialise(0xFF200060,0xFF200080);
+}
+
 void LCD_reset()
 {
 	LT24_clearDisplay(LT24_BLACK);
@@ -75,11 +81,6 @@ void SevenSeg_set(unsigned int timeValues[], bool mode)
 	DE1SoC_SevenSeg_SetDoubleDec(0, timeValues[0 + mode]);
 	DE1SoC_SevenSeg_SetDoubleDec(2, timeValues[1 + mode]);
 	DE1SoC_SevenSeg_SetDoubleDec(4, timeValues[2 + mode]);
-}
-
-void SevenSeg_display_unit(int display, unsigned int timeValue)
-{
-	DE1SoC_SevenSeg_SetDoubleDec(display, timeValue);
 }
 
 void SevenSeg_display_msg(int i)

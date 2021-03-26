@@ -15,36 +15,20 @@
  *
  */
 
-#include "main.h"
-
-// Initialises A9 Private Timer
-// Loads in max timer value, sets control bits
-void init_timer()
-{
-	Timer_initialise(0xFFFEC600);
-	Timer_setLoad(0xFFFFFFFF);
-	Timer_setControl(199, 0, 1, 1);
-}
-
-// Sends command to initialise LCD
-void init_lcd()
-{
-	LT24_initialise(0xFF200060,0xFF200080);
-	HPS_ResetWatchdog();
-}
-
+// inclusion causes 'variable multiply defined" errors
+//#include "stopwatch.h"
 
 //Main Function
-int main(void) {
+int main() {
 	// initialise LCD
-	init_lcd();
+	LCD_init();
 
 	// initialise Timer
-	init_timer();
+	Timer_init();
 
-	// begin introduction loop
+	// enter main stopwatch loop
 	while(1){
-		intro();
+		introduction();
 
 		stopwatch();
 	}

@@ -11,7 +11,10 @@
 #include "HPS_Watchdog/HPS_Watchdog.h"
 #include "HPS_PrivateTimer/HPS_PrivateTimer.h"
 
-// TESTING
+// inclusion causes 'variable multiply defined" errors
+//#include "display.h"
+
+/* TESTING */
 #include "time.h"
 #include "stdio.h"
 
@@ -26,8 +29,14 @@ const unsigned int PERIOD = 225000000/(SCALER+1);		// A9 Private timer freq. = 2
 const unsigned int TIMER_SIZE = 4;				// hundredths, seconds, minutes, hours
 
 // TYPE DEFINITIONS
-typedef void (*TaskFunction)(unsigned int*, bool);
+typedef void (*TaskFunction)(unsigned int*);
 
+
+/*
+ *	TIMER INITIALISATION
+ */
+
+void Timer_init( void );
 
 /*
  *	BUTTON FUNCTIONS
@@ -48,24 +57,24 @@ void mode_toggle(bool* mode);
  */
 
 // Increment hundredths timer value, display values
-void hundredths(unsigned int* timeValue, bool mode);
+void hundredths(unsigned int* timeValue);
 
 // Increment seconds timer value, display values
-void seconds(unsigned int* timeValue, bool mode);
+void seconds(unsigned int* timeValue);
 
 // Increment minutes timer value, display values
-void minutes(unsigned int* timeValue, bool mode);
+void minutes(unsigned int* timeValue);
 
 // Increment hours timer value, display values
-void hours(unsigned int* timeValue, bool mode);
+void hours(unsigned int* timeValue);
 
 
 /*
- *	INTRO FUNCTION
+ *	INTRODUCTION FUNCTION
  */
 
 // Function to introduce the timer on the Seven Segment displays
-void intro( void );
+void introduction( void );
 
 
 /*
