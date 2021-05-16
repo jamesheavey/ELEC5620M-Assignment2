@@ -3,7 +3,7 @@
  *
  *  Created on: Mar 17, 2021
  *      Author:		James Heavey
- *      SID:			201198933
+ *      SID:		201198933
  *      Affiliation:	University of Leeds
  *
  * DESCRIPTION:
@@ -15,16 +15,21 @@
  *
  */
 
-#include "main.h"
+// inclusion causes 'variable multiply defined" errors
+//#include "stopwatch.h"
 
 //Main Function
-int main(void) {
+int main() {
 	// initialise LCD
-	init_lcd();
+	LCD_init();
 
 	// initialise Timer
-	init_timer();
+	Timer_init();
 
-	// begin main timer loop
-	timer();
+	// enter main stopwatch loop
+	while(1){
+		introduction();
+
+		stopwatch();
+	}
 }

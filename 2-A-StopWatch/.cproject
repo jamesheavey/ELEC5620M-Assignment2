@@ -31,9 +31,7 @@
 								<option id="com.arm.tool.c.compiler.option.targetcpu.1076826337" name="Target CPU (--cpu)" superClass="com.arm.tool.c.compiler.option.targetcpu" useByScannerDiscovery="true" value="Cortex-A9.no_neon.no_vfp" valueType="string"/>
 								<option id="com.arm.tool.c.compiler.option.fppcs.1522693545" name="Floating-point PCS (--apcs)" superClass="com.arm.tool.c.compiler.option.fppcs" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.fppcs.auto" valueType="enumerated"/>
 								<option id="com.arm.tool.c.compiler.option.inst.1355517110" name="Instruction set" superClass="com.arm.tool.c.compiler.option.inst" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.inst.arm" valueType="enumerated"/>
-								<option id="com.arm.tool.c.compiler.option.defmac.2103786686" name="Define macro (-D)" superClass="com.arm.tool.c.compiler.option.defmac" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="HARDWARE_OPTIMISED"/>
-								</option>
+								<option id="com.arm.tool.c.compiler.option.defmac.2103786686" name="Define macro (-D)" superClass="com.arm.tool.c.compiler.option.defmac" useByScannerDiscovery="false"/>
 								<option id="com.arm.tool.c.compiler.option.optfor.457386022" name="Optimize for" superClass="com.arm.tool.c.compiler.option.optfor" useByScannerDiscovery="true" value="com.arm.tool.c.compiler.option.optfor.time" valueType="enumerated"/>
 								<inputType id="com.arm.tool.c.compiler.input.2066852045" superClass="com.arm.tool.c.compiler.input"/>
 								<inputType id="com.arm.tool.cpp.compiler.input.140302852" superClass="com.arm.tool.cpp.compiler.input"/>
@@ -45,11 +43,7 @@
 								<option id="com.arm.tool.assembler.option.cpu.1298176252" name="Target CPU (--cpu)" superClass="com.arm.tool.assembler.option.cpu" value="Cortex-A9.no_neon.no_vfp" valueType="string"/>
 								<option id="com.arm.tool.assembler.option.fppcs.832375773" name="Floating-point PCS (--apcs)" superClass="com.arm.tool.assembler.option.fppcs" value="com.arm.tool.c.compiler.option.fppcs.auto" valueType="enumerated"/>
 								<option id="com.arm.tool.assembler.option.inst.1569355712" name="Instruction set" superClass="com.arm.tool.assembler.option.inst" value="com.arm.tool.c.compiler.option.inst.arm" valueType="enumerated"/>
-								<option id="com.arm.tool.assembler.option.incpath.1654078117" name="Include Path (-i)" superClass="com.arm.tool.assembler.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/2-A-StopWatch/Drivers}&quot;"/>
-									<listOptionValue builtIn="false" value="../2-A-StopWatch/HPS_PrivateTimer"/>
-									<listOptionValue builtIn="false" value="../2-A-StopWatch/DE1SoC_SevenSeg"/>
-								</option>
+								<option id="com.arm.tool.assembler.option.incpath.1654078117" name="Include Path (-i)" superClass="com.arm.tool.assembler.option.incpath"/>
 								<inputType id="com.arm.tool.assembler.input.827801244" superClass="com.arm.tool.assembler.input"/>
 							</tool>
 							<tool id="com.arm.tool.c.linker.1155415084" name="ARM Linker 5" superClass="com.arm.tool.c.linker">
@@ -61,7 +55,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="ELEC5620M-Student-jamesheavey|ELEC5620M-Drivers|Drivers" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="ELEC5620M-Student-jamesheavey" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ELEC5620M-Student-jamesheavey"/>
 					</sourceEntries>
 				</configuration>
