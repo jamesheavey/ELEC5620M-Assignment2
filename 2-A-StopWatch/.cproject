@@ -76,6 +76,10 @@
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/2-A-StopWatch"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="com.arm.projectSettings" version="5.25"/>
 </cproject>
